@@ -36,7 +36,7 @@ public class VoucherService {
         m.execute(writer, travel).flush();
         String html = writer.toString();
 
-        String fileName= "pdf/"+id + ".pdf";
+        String fileName= "./pdf/"+id + ".pdf";
 
         File f = new File(fileName);
 
