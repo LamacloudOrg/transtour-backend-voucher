@@ -1,19 +1,18 @@
 package com.transtour.backend.voucher.service;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
-import com.itextpdf.html2pdf.HtmlConverter;
+
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.StringWriter;
-import java.net.URL;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.io.FileNotFoundException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,29 +20,48 @@ import java.util.Map;
 public class VoucherService {
 
     private static final Logger LOG = LoggerFactory.getLogger(VoucherService.class);
+    private ArrayList<Map<String, Object>> pieceFieldDetailsMaps;
 
+    public String exportVoucher(Long voucherId) throws FileNotFoundException, JRException {
 
-    public void getVoucher(Integer id) throws  Exception{
-        Map<String,Object> travel = new HashMap<>();
-        travel.put("nombre","Juan Manuel");
-        travel.put("fecha", LocalDate.now().toString());
-        travel.put("hora", LocalTime.now().toString());
+        this.pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
 
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache m = mf.compile("template/v1.html");
+        Map<String, Object> pieceDetailsMap = new HashMap<String, Object>();
+     // pieceDetailsMap.put("orderNumber","123456");
+        String germanString = "123456";
+        byte[] germanBytes = germanString.getBytes();
 
-        StringWriter writer = new StringWriter();
-        m.execute(writer, travel).flush();
-        String html = writer.toString();
+        String asciiEncodedString = new String(germanBytes, StandardCharsets.US_ASCII);
 
-        String fileName= "./pdf/"+id + ".pdf";
+        pieceDetailsMap.put("orderNumber", asciiEncodedString);
 
-        File f = new File(fileName);
+      /*  pieceDetailsMap.put("dateCreated","21/05/2021");
+        pieceDetailsMap.put("car","Toyota");
+        pieceDetailsMap.put("time","14:30");
+        pieceDetailsMap.put("carDriver","Quique");
+        pieceDetailsMap.put("company","MercadoLibre");
+        pieceDetailsMap.put("passenger","Maradona");
+        pieceDetailsMap.put("originAddress","calle 1");
+        pieceDetailsMap.put("destinyAddress","Calle 10");
+        pieceDetailsMap.put("observations","No aplica");
+        pieceDetailsMap.put("amount","1399,99");
+        pieceDetailsMap.put("whitingTime","3 horas");
+        pieceDetailsMap.put("toll","123,88");
+        pieceDetailsMap.put("taxParking","223");
+        pieceDetailsMap.put("taxForBackCompany","000");
+        pieceDetailsMap.put("totalAmount","2500");
+        pieceDetailsMap.put("bc","---");
+        pieceDetailsMap.put("reserveNumber","100");
+        */
 
-        HtmlConverter.convertToPdf(html, new FileOutputStream(f));
+        this.pieceFieldDetailsMaps.add(pieceDetailsMap);
 
-        LOG.debug("Se creo el archivo :"+ fileName);
+        File file = ResourceUtils.getFile("classpath:jasperReport/voucheSinImagen.jasper");
+        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
+        JasperExportManager.exportReportToPdf(jasperPrint);
+        return "OK";
     }
-
 }

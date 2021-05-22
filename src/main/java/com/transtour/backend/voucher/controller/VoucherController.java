@@ -1,12 +1,10 @@
 package com.transtour.backend.voucher.controller;
 
-
 import com.transtour.backend.voucher.service.VoucherService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.io.FileNotFoundException;
 
 @RequestMapping(path = "/v1/voucher")
 @RestController
@@ -20,11 +18,9 @@ public class VoucherController {
         return "working";
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<?> generateVocuher(@PathVariable("id") String voucherId) throws Exception{
-        service.getVoucher(Integer.valueOf(voucherId));
-        return  new ResponseEntity<>(HttpStatus.ACCEPTED);
+    @GetMapping("/downloadPdf/{id}")
+    public String generatePdf(@PathVariable("id") Long voucherId) throws FileNotFoundException, JRException {
+        return service.exportVoucher(voucherId);
     }
-
 
 }
