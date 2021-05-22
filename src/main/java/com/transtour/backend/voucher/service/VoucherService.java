@@ -54,7 +54,7 @@ public class VoucherService {
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
-        JasperExportManager.exportReportToPdf(jasperPrint, path);
+        JasperExportManager.exportReportToPdfFile(jasperPrint, path);
         return "OK";
     }
 }
