@@ -27,15 +27,8 @@ public class VoucherService {
         this.pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
 
         Map<String, Object> pieceDetailsMap = new HashMap<String, Object>();
-     // pieceDetailsMap.put("orderNumber","123456");
-        String germanString = "123456";
-        byte[] germanBytes = germanString.getBytes();
-
-        String asciiEncodedString = new String(germanBytes, StandardCharsets.US_ASCII);
-
-        pieceDetailsMap.put("orderNumber", asciiEncodedString);
-
-      /*  pieceDetailsMap.put("dateCreated","21/05/2021");
+        pieceDetailsMap.put("orderNumber","123456");
+        pieceDetailsMap.put("dateCreated","21/05/2021");
         pieceDetailsMap.put("car","Toyota");
         pieceDetailsMap.put("time","14:30");
         pieceDetailsMap.put("carDriver","Quique");
@@ -52,11 +45,10 @@ public class VoucherService {
         pieceDetailsMap.put("totalAmount","2500");
         pieceDetailsMap.put("bc","---");
         pieceDetailsMap.put("reserveNumber","100");
-        */
 
         this.pieceFieldDetailsMaps.add(pieceDetailsMap);
 
-        File file = ResourceUtils.getFile("classpath:jasperReport/voucheSinImagen.jasper");
+        File file = ResourceUtils.getFile("classpath:voucheSinImagen.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
