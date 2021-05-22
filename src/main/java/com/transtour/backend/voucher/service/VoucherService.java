@@ -21,6 +21,7 @@ public class VoucherService {
 
     private static final Logger LOG = LoggerFactory.getLogger(VoucherService.class);
     private ArrayList<Map<String, Object>> pieceFieldDetailsMaps;
+    String path = "C:\\User\\Default\\voucher.pdf";
 
     public String exportVoucher(Long voucherId) throws FileNotFoundException, JRException {
 
@@ -53,7 +54,7 @@ public class VoucherService {
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
-        JasperExportManager.exportReportToPdf(jasperPrint);
+        JasperExportManager.exportReportToPdf(jasperPrint, path);
         return "OK";
     }
 }
