@@ -14,18 +14,19 @@ import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class VoucherService {
 
     private static final Logger LOG = LoggerFactory.getLogger(VoucherService.class);
-    private ArrayList<Map<String, Object>> pieceFieldDetailsMaps;
-    String path = "C:\\User\\Default\\voucher.pdf";
+   private ArrayList<Map<String, Object>> pieceFieldDetailsMaps;
+    String path = "./src/main/resources/voucher/voucher.pdf";
 
     public String exportVoucher(Long voucherId) throws FileNotFoundException, JRException {
 
-        this.pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
+        pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
 
         Map<String, Object> pieceDetailsMap = new HashMap<String, Object>();
         pieceDetailsMap.put("orderNumber","123456");
@@ -49,7 +50,7 @@ public class VoucherService {
 
         this.pieceFieldDetailsMaps.add(pieceDetailsMap);
 
-        File file = ResourceUtils.getFile("classpath:voucheSinImagen.jrxml");
+        File file = ResourceUtils.getFile("classpath:jasperReport/voucher.jrxml");
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
