@@ -1,61 +1,86 @@
 package com.transtour.backend.voucher.service;
 
 
+import com.github.dozermapper.core.Mapper;
+import com.transtour.backend.voucher.dto.Travel;
+import com.transtour.backend.voucher.dto.TravelDTO;
+import com.transtour.backend.voucher.model.Voucher;
+import com.transtour.backend.voucher.repository.ITravelRepo;
+import com.transtour.backend.voucher.repository.IVoucherRepository;
+import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class VoucherService {
 
     private static final Logger LOG = LoggerFactory.getLogger(VoucherService.class);
-   private ArrayList<Map<String, Object>> pieceFieldDetailsMaps;
-    String path = "./src/main/resources/voucher/voucher.pdf";
 
-    public String exportVoucher(Long voucherId) throws FileNotFoundException, JRException {
+    @Qualifier("VoucherRepo")
+    @Autowired
+    IVoucherRepository voucerRepo;
 
-        pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
+    @Qualifier("TravelRepo")
+    @Autowired
+    ITravelRepo travelRepo;
 
-        Map<String, Object> pieceDetailsMap = new HashMap<String, Object>();
-        pieceDetailsMap.put("orderNumber","123456");
-        pieceDetailsMap.put("dateCreated","21/05/2021");
-        pieceDetailsMap.put("car","Toyota");
-        pieceDetailsMap.put("time","14:30");
-        pieceDetailsMap.put("carDriver","Quique");
-        pieceDetailsMap.put("company","MercadoLibre");
-        pieceDetailsMap.put("passenger","Maradona");
-        pieceDetailsMap.put("originAddress","calle 1");
-        pieceDetailsMap.put("destinyAddress","Calle 10");
-        pieceDetailsMap.put("observations","No aplica");
-        pieceDetailsMap.put("amount","1399,99");
-        pieceDetailsMap.put("whitingTime","3 horas");
-        pieceDetailsMap.put("toll","123,88");
-        pieceDetailsMap.put("taxParking","223");
-        pieceDetailsMap.put("taxForBackCompany","000");
-        pieceDetailsMap.put("totalAmount","2500");
-        pieceDetailsMap.put("bc","---");
-        pieceDetailsMap.put("reserveNumber","100");
 
-        this.pieceFieldDetailsMaps.add(pieceDetailsMap);
+    @Autowired
+    Mapper mapper;
 
-        File file = ResourceUtils.getFile("classpath:jasperReport/voucher.jrxml");
+
+    public String exportVoucher(String voucherId) throws FileNotFoundException, JRException {
+
+        ArrayList<Map<String, Object>> pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
+
+        Optional<Voucher> voucher = voucerRepo.findById(voucherId);
+
+        voucher.orElseThrow(RuntimeException::new);
+
+        Travel travel = travelRepo.getTravel(voucher.get().getTravelId());
+
+        TravelDTO travelDTO = new TravelDTO();
+
+        mapper.map(travel,travelDTO);
+
+        Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
+
+        pieceFieldDetailsMaps.add(pieceDetailsMap);
+
+        File file = ResourceUtils.getFile(VoucherUtil.jasperFile);
         JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
         JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, path);
+        JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path);
         return "OK";
+    }
+
+    public String create(String travelId) {
+        Voucher v = new Voucher();
+        v.setTravelId(travelId);
+        v.setCrate_at(LocalDateTime.now());
+        return "OK";
+    }
+
+    public void uploadFile(String travelId, String file) {
+
+        Optional<Voucher> voucher = voucerRepo.findByTravelId(travelId);
+        voucher.orElseThrow(RuntimeException::new);
+        voucher.get().setDocumentSigned(file);
+        voucerRepo.save(voucher.get());
     }
 }

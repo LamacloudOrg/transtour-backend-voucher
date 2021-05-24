@@ -1,36 +1,27 @@
 package com.transtour.backend.voucher.model;
 
+import com.querydsl.core.annotations.QueryEntity;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.io.File;
+import javax.persistence.Id;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.util.List;
 
-
+@NoArgsConstructor
+@Data
+@QueryEntity
+@Document("voucher")
 public class Voucher implements Serializable {
-
-    Long id; //orden de servicio
-    LocalDateTime createDate;
-    String car; // Hacer un objeto car con sos atributos
-    String carDriver;
-    LocalTime startTime;
-
-    String company; // crear objeto empresa con sus atributos
-    String bc;
-
-    String passenger;
-    Long reserveNumber;
-
-    String originAddress;
-    String destinyAddress;
-
-    String observation;
-    String amount;
-    LocalDate whitingTime;
-    LocalTime peajes;
-    Double parkingAmount;
-    Double taxForReturn;
-    Double totalAmount;
-    File signatur;
+    @Id
+    String id;
+    String travelId;
+    String voucher;
+    String documentSigned;
+    @CreatedDate
+    LocalDateTime crate_at;
 }
+
