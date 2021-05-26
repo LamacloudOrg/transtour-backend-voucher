@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,10 +19,13 @@ import java.util.List;
 public class Voucher implements Serializable {
     @Id
     String id;
+    VoucherStatus status;
     String travelId;
     String voucher;
     String documentSigned;
+    String company;
     @CreatedDate
-    LocalDateTime crate_at;
+    LocalDate dateCreated;
+    LocalDateTime time;
 }
 

@@ -1,7 +1,6 @@
 package com.transtour.backend.voucher.repository;
 
 
-import com.transtour.backend.voucher.dto.Travel;
 import com.transtour.backend.voucher.model.Voucher;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.mongodb.repository.MongoRepository;

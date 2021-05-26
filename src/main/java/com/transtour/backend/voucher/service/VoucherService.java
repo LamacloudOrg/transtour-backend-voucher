@@ -2,15 +2,15 @@ package com.transtour.backend.voucher.service;
 
 
 import com.github.dozermapper.core.Mapper;
-import com.transtour.backend.voucher.dto.Travel;
+import com.transtour.backend.voucher.model.Travel;
 import com.transtour.backend.voucher.dto.TravelDTO;
 import com.transtour.backend.voucher.model.Voucher;
+import com.transtour.backend.voucher.model.VoucherStatus;
 import com.transtour.backend.voucher.repository.ITravelRepo;
 import com.transtour.backend.voucher.repository.IVoucherRepository;
 import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +20,10 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class VoucherService {
@@ -42,45 +43,70 @@ public class VoucherService {
     Mapper mapper;
 
 
-    public String exportVoucher(String voucherId) throws FileNotFoundException, JRException {
+    public CompletableFuture<String> exportVoucher(String voucherId) throws FileNotFoundException, JRException {
+        //TODO agregar regla que solo se permita genera el voucher si esta en estado ready
 
-        ArrayList<Map<String, Object>> pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
+                ()->{
+                ArrayList<Map<String, Object>> pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
 
-        Optional<Voucher> voucher = voucerRepo.findById(voucherId);
+                Optional<Voucher> voucher = voucerRepo.findById(voucherId);
 
-        voucher.orElseThrow(RuntimeException::new);
+                voucher.orElseThrow(RuntimeException::new);
 
-        Travel travel = travelRepo.getTravel(voucher.get().getTravelId());
+                Travel travel = travelRepo.getTravel(voucher.get().getTravelId());
 
-        TravelDTO travelDTO = new TravelDTO();
+                TravelDTO travelDTO = new TravelDTO();
 
-        mapper.map(travel,travelDTO);
+                mapper.map(travel,travelDTO);
 
-        Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
+                Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
 
-        pieceFieldDetailsMaps.add(pieceDetailsMap);
+                pieceFieldDetailsMaps.add(pieceDetailsMap);
 
-        File file = ResourceUtils.getFile(VoucherUtil.jasperFile);
-        JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
-        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
+                try {
+                    File file = ResourceUtils.getFile(VoucherUtil.jasperFile);
+                    JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+                    JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
-        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
-        JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path);
-        return "OK";
+                    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
+                    JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path);
+
+                }catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+                return "OK";
+        });
+        return completableFuture;
     }
 
-    public String create(String travelId) {
-        Voucher v = new Voucher();
-        v.setTravelId(travelId);
-        v.setCrate_at(LocalDateTime.now());
-        return "OK";
+    public CompletableFuture<String> create(Travel travel) {
+
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
+                ()->{
+                    Voucher v = new Voucher();
+                    v.setTravelId(travel.getOrderNumber());
+                    v.setCompany(travel.getCompany());
+                    v.setDateCreated(LocalDate.now());
+                    v.setTime(LocalDateTime.now());
+                    v.setStatus(VoucherStatus.CREATED);
+                    voucerRepo.save(v);
+                    return v.getId();
+                });
+        return completableFuture;
     }
 
-    public void uploadFile(String travelId, String file) {
+    public CompletableFuture<String> uploadFile(String travelId, String file) {
 
-        Optional<Voucher> voucher = voucerRepo.findByTravelId(travelId);
-        voucher.orElseThrow(RuntimeException::new);
-        voucher.get().setDocumentSigned(file);
-        voucerRepo.save(voucher.get());
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
+        ()->{
+            Optional<Voucher> voucher = voucerRepo.findByTravelId(travelId);
+            voucher.orElseThrow(RuntimeException::new);
+            voucher.get().setDocumentSigned(file);
+            voucher.get().setStatus(VoucherStatus.READY);
+            voucerRepo.save(voucher.get());
+            return "file was uploaded";
+        });
+        return completableFuture;
     }
 }

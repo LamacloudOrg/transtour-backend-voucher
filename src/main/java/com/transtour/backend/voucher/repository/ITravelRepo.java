@@ -1,6 +1,6 @@
 package com.transtour.backend.voucher.repository;
 
-import com.transtour.backend.voucher.dto.Travel;
+import com.transtour.backend.voucher.model.Travel;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;

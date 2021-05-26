@@ -13,28 +13,22 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Data
 public class TravelDTO implements Serializable {
-
-    public String id; //orden de servicio
-    public LocalDate createDate;
-    public String car; // Hacer un objeto car con sos atributos
+    public String orderNumber;
+    public LocalDate dateCreated;
+    public String car;
     public String carDriver;
-    public LocalTime startTime;
-
-    public String company; // crear objeto empresa con sus atributos
+    public LocalTime time;
+    public String company;
     public String bc;
-
     public String passenger;
-    public Long reserveNumber;
-
+    public String reserveNumber;
     public String originAddress;
     public String destinyAddress;
-
     public String observation;
     public String amount;
-    public LocalDate whitingTime;
-    public LocalTime peajes;
-    public Double parkingAmount;
-    public Double taxForReturn;
-    public Double totalAmount;
-    public File signatur;
+    public String whitingTime;
+    public String toll;
+    public String parkingAmount;
+    public String taxForReturn;
+    public String totalAmount;
 }
