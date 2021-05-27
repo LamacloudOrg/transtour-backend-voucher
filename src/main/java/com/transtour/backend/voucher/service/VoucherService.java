@@ -11,15 +11,25 @@ import com.transtour.backend.voucher.repository.IVoucherRepository;
 import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -43,14 +53,14 @@ public class VoucherService {
     Mapper mapper;
 
 
-    public CompletableFuture<String> exportVoucher(String voucherId) throws FileNotFoundException, JRException {
+    public CompletableFuture<ResponseEntity> exportVoucher(String voucherId) throws FileNotFoundException, JRException {
         //TODO agregar regla que solo se permita genera el voucher si esta en estado ready
 
-        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
+        CompletableFuture<ResponseEntity> completableFuture = CompletableFuture.supplyAsync(
                 ()->{
                 ArrayList<Map<String, Object>> pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
 
-                Optional<Voucher> voucher = voucerRepo.findById(voucherId);
+                Optional<Voucher> voucher = voucerRepo.findByTravelId(voucherId);
 
                 voucher.orElseThrow(RuntimeException::new);
 
@@ -63,6 +73,7 @@ public class VoucherService {
                 Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
 
                 pieceFieldDetailsMaps.add(pieceDetailsMap);
+                String fileName = travelDTO.dateCreated.toString() + "-" +travelDTO.time.toString() + "-"+ travelDTO.company.toString() + "-" + travelDTO.orderNumber.toString();
 
                 try {
                     File file = ResourceUtils.getFile(VoucherUtil.jasperFile);
@@ -70,13 +81,33 @@ public class VoucherService {
                     JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
                     JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
-                    JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path);
+                    JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path + fileName);
+
+                    //Thread.sleep(1500);
+
+                    File pdf = new File(VoucherUtil.path + fileName);
+                    InputStreamResource resource = new InputStreamResource(new FileInputStream(pdf));
+
+                    byte [] bytes = Files.readAllBytes(pdf.toPath());
+
+                    String b64 = Base64.getEncoder().encodeToString(bytes);
+
+                    voucher.get().setVoucher(b64);
+                    voucerRepo.save(voucher.get());
+
+                    return ResponseEntity.ok()
+                            // Content-Disposition
+                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + pdf.getName())
+                            // Content-Type
+                            .contentType(MediaType.APPLICATION_PDF)
+                            // Contet-Length
+                            .contentLength(pdf.length()) //
+                            .body(resource);
 
                 }catch (Exception e){
                     throw new RuntimeException(e);
                 }
-                return "OK";
-        });
+                });
         return completableFuture;
     }
 
@@ -107,6 +138,17 @@ public class VoucherService {
             voucerRepo.save(voucher.get());
             return "file was uploaded";
         });
+        return completableFuture;
+    }
+
+    public CompletableFuture<ResponseEntity> findAll(Pageable pageable) {
+
+        CompletableFuture<ResponseEntity> completableFuture  = CompletableFuture.supplyAsync( ()-> {
+            Page<Voucher> page = voucerRepo.findAll(pageable);
+            return ResponseEntity.ok().body(page);
+
+        });
+
         return completableFuture;
     }
 }

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class VoucherUtil {
 
-    public static String path = "./src/main/resources/voucher/voucher.pdf";
+    public static String path = "./src/main/resources/voucher/";
     public static String jasperFile = "classpath:jasperReport/voucher.jrxml";
 
     public static Map<String,Object> mapDetail(@NonNull Object o){
@@ -16,7 +16,7 @@ public class VoucherUtil {
         Field[] fields =o.getClass().getDeclaredFields();
         Arrays.stream(fields).forEach(field -> {
             try {
-                detail.put(field.getName(), field.get(o));
+                detail.put(field.getName(), field.get(o).toString());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
