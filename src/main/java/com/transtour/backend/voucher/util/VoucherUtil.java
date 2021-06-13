@@ -8,8 +8,8 @@ import java.util.Map;
 
 public class VoucherUtil {
 
-    public static String path = "./src/main/resources/voucher/";
-    public static String jasperFile = "classpath:jasperReport/voucher.jrxml";
+    public static String path = "/opt/app/voucher/";
+    public static String jasperFile = "/opt/app/voucher.jrxml";
 
     public static Map<String,Object> mapDetail(@NonNull Object o){
         Map<String,Object> detail = new HashMap<>();
