@@ -16,7 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -76,8 +78,11 @@ public class VoucherService {
                 String fileName = travelDTO.dateCreated.toString() + "-" +travelDTO.time.toString() + "-"+ travelDTO.company.toString() + "-" + travelDTO.orderNumber.toString();
 
                 try {
-                    File file = ResourceUtils.getFile(VoucherUtil.jasperFile);
-                    JasperReport jasperReport = JasperCompileManager.compileReport(file.getAbsolutePath());
+                    File jasper = ResourceUtils.getFile(VoucherUtil.jasperFile);
+                   // Resource r = new ClassPathResource(VoucherUtil.jasperFile);
+                    //File jasper = r.getFile();
+
+                    JasperReport jasperReport = JasperCompileManager.compileReport(jasper.getAbsolutePath());
                     JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
                     JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
@@ -86,6 +91,8 @@ public class VoucherService {
                     //Thread.sleep(1500);
 
                     File pdf = new File(VoucherUtil.path + fileName);
+
+
                     InputStreamResource resource = new InputStreamResource(new FileInputStream(pdf));
 
                     byte [] bytes = Files.readAllBytes(pdf.toPath());
