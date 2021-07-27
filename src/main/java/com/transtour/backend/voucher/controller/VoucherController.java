@@ -1,5 +1,7 @@
 package com.transtour.backend.voucher.controller;
 
+import com.transtour.backend.voucher.dto.SignatureVoucherDTO;
+import com.transtour.backend.voucher.model.SignatureVoucher;
 import com.transtour.backend.voucher.model.Travel;
 import com.transtour.backend.voucher.service.VoucherService;
 import net.sf.jasperreports.engine.JRException;
@@ -41,7 +43,6 @@ public class VoucherController {
         return service.uploadFile(travelId,file);
     }
 
-
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/downloadPdf/{id}")
     public CompletableFuture<ResponseEntity> generatePdf(@PathVariable("id") String voucherId) throws FileNotFoundException, JRException {
@@ -51,6 +52,12 @@ public class VoucherController {
     @GetMapping("/list")
     public CompletableFuture<ResponseEntity> list (Pageable pageable) throws Exception {
         return service.findAll(pageable);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PostMapping("/saveSignature")
+    public CompletableFuture<String> saveSignature(@RequestBody SignatureVoucherDTO signatureVoucherDTO)  {
+        return service.saveSignatureVoucher(signatureVoucherDTO);
     }
 
 }

@@ -2,10 +2,13 @@ package com.transtour.backend.voucher.service;
 
 
 import com.github.dozermapper.core.Mapper;
+import com.transtour.backend.voucher.dto.SignatureVoucherDTO;
+import com.transtour.backend.voucher.model.SignatureVoucher;
 import com.transtour.backend.voucher.model.Travel;
 import com.transtour.backend.voucher.dto.TravelDTO;
 import com.transtour.backend.voucher.model.Voucher;
 import com.transtour.backend.voucher.model.VoucherStatus;
+import com.transtour.backend.voucher.repository.ISignatureVoucherRepository;
 import com.transtour.backend.voucher.repository.ITravelRepo;
 import com.transtour.backend.voucher.repository.IVoucherRepository;
 import com.transtour.backend.voucher.util.VoucherUtil;
@@ -50,6 +53,9 @@ public class VoucherService {
     @Autowired
     ITravelRepo travelRepo;
 
+    @Qualifier("SignatureVoucherRepo")
+    @Autowired
+    ISignatureVoucherRepository iSignatureRepo;
 
     @Autowired
     Mapper mapper;
@@ -156,6 +162,34 @@ public class VoucherService {
 
         });
 
+        return completableFuture;
+    }
+
+    public CompletableFuture<String> saveSignatureVoucher(SignatureVoucherDTO signatureVoucherDTO) {
+
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
+                ()->{
+                    SignatureVoucher signatureV = new SignatureVoucher();
+                    signatureV.setTravelId(signatureVoucherDTO.getTravelId());
+                    signatureV.setBase64(signatureVoucherDTO.getBase64());
+                    signatureV.setContentType(signatureVoucherDTO.getContentType());
+                    iSignatureRepo.save(signatureV);
+                    return "Created";
+                });
+
+        CompletableFuture<Object> notified = completableFuture.thenApply(s-> setSignatureIntoVoucher(signatureVoucherDTO));
+        return completableFuture;
+    }
+
+    public CompletableFuture<Void> setSignatureIntoVoucher(SignatureVoucherDTO signatureVoucherDTO){
+
+        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(
+                ()->{
+                    Optional<Voucher> voucher = voucerRepo.findByTravelId(signatureVoucherDTO.getTravelId());
+                    voucher.orElseThrow(RuntimeException::new);
+                    voucher.get().setDocumentSigned(signatureVoucherDTO.getBase64());
+                }
+        );
         return completableFuture;
     }
 }
