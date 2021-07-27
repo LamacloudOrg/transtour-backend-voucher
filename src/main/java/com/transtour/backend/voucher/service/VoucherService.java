@@ -3,9 +3,10 @@ package com.transtour.backend.voucher.service;
 
 import com.github.dozermapper.core.Mapper;
 import com.transtour.backend.voucher.dto.SignatureVoucherDTO;
+import com.transtour.backend.voucher.dto.TravelDTO;
+import com.transtour.backend.voucher.excption.VoucherNotReady;
 import com.transtour.backend.voucher.model.SignatureVoucher;
 import com.transtour.backend.voucher.model.Travel;
-import com.transtour.backend.voucher.dto.TravelDTO;
 import com.transtour.backend.voucher.model.Voucher;
 import com.transtour.backend.voucher.model.VoucherStatus;
 import com.transtour.backend.voucher.repository.ISignatureVoucherRepository;
@@ -14,30 +15,29 @@ import com.transtour.backend.voucher.repository.IVoucherRepository;
 import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import sun.misc.BASE64Decoder;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -65,61 +65,78 @@ public class VoucherService {
         //TODO agregar regla que solo se permita genera el voucher si esta en estado ready
 
         CompletableFuture<ResponseEntity> completableFuture = CompletableFuture.supplyAsync(
-                ()->{
-                ArrayList<Map<String, Object>> pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
+                () -> {
+                    ArrayList<Map<String, Object>> pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
 
-                Optional<Voucher> voucher = voucerRepo.findByTravelId(voucherId);
+                    Optional<Voucher> voucher = voucerRepo.findByTravelId(voucherId);
 
-                voucher.orElseThrow(RuntimeException::new);
+                    voucher.orElseThrow(RuntimeException::new);
 
-                Travel travel = travelRepo.getTravel(voucher.get().getTravelId());
+                    if (!voucher.get().getStatus().equals(VoucherStatus.READY)) throw new VoucherNotReady();
 
-                TravelDTO travelDTO = new TravelDTO();
+                    Travel travel = travelRepo.getTravel(voucher.get().getTravelId());
 
-                mapper.map(travel,travelDTO);
+                    TravelDTO travelDTO = new TravelDTO();
 
-                Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
+                    mapper.map(travel, travelDTO);
 
-                pieceFieldDetailsMaps.add(pieceDetailsMap);
-                String fileName = travelDTO.dateCreated.toString() + "-" +travelDTO.time.toString() + "-"+ travelDTO.company.toString() + "-" + travelDTO.orderNumber.toString();
+                    String document = voucher.get().getDocumentSigned();
 
-                try {
-                    File jasper = ResourceUtils.getFile(VoucherUtil.jasperFile);
-                   // Resource r = new ClassPathResource(VoucherUtil.jasperFile);
-                    //File jasper = r.getFile();
+                    BufferedImage image = null;
+                    byte[] imageByte;
 
-                    JasperReport jasperReport = JasperCompileManager.compileReport(jasper.getAbsolutePath());
-                    JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
+                    try {
+                        BASE64Decoder decoder = new BASE64Decoder();
+                        imageByte = decoder.decodeBuffer(document);
+                        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
+                        image = ImageIO.read(bis);
 
-                    JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
-                    JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path + fileName);
+                        ImageIO.write(image, "png", new File(VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now()));
 
-                    //Thread.sleep(1500);
+                        bis.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e.getLocalizedMessage());
+                    }
 
-                    File pdf = new File(VoucherUtil.path + fileName);
+                    travelDTO.setSiganture(VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now()+".png");
 
+                    Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
 
-                    InputStreamResource resource = new InputStreamResource(new FileInputStream(pdf));
+                    pieceFieldDetailsMaps.add(pieceDetailsMap);
+                    String fileName = travelDTO.dateCreated.toString() + "-" + travelDTO.time.toString() + "-" + travelDTO.company + "-" + travelDTO.orderNumber;
 
-                    byte [] bytes = Files.readAllBytes(pdf.toPath());
+                    try {
+                        File jasper = ResourceUtils.getFile(VoucherUtil.jasperFile);
 
-                    String b64 = Base64.getEncoder().encodeToString(bytes);
+                        JasperReport jasperReport = JasperCompileManager.compileReport(jasper.getAbsolutePath());
+                        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
 
-                    voucher.get().setVoucher(b64);
-                    voucerRepo.save(voucher.get());
+                        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
+                        JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path + fileName);
 
-                    return ResponseEntity.ok()
-                            // Content-Disposition
-                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + pdf.getName())
-                            // Content-Type
-                            .contentType(MediaType.APPLICATION_PDF)
-                            // Contet-Length
-                            .contentLength(pdf.length()) //
-                            .body(resource);
+                        File pdf = new File(VoucherUtil.path + fileName);
 
-                }catch (Exception e){
-                    throw new RuntimeException(e);
-                }
+                        InputStreamResource resource = new InputStreamResource(new FileInputStream(pdf));
+
+                        byte[] bytes = Files.readAllBytes(pdf.toPath());
+
+                        String b64 = Base64.getEncoder().encodeToString(bytes);
+
+                        voucher.get().setVoucher(b64);
+                        voucerRepo.save(voucher.get());
+
+                        return ResponseEntity.ok()
+                                // Content-Disposition
+                                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=" + pdf.getName())
+                                // Content-Type
+                                .contentType(MediaType.APPLICATION_PDF)
+                                // Contet-Length
+                                .contentLength(pdf.length()) //
+                                .body(resource);
+
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
                 });
         return completableFuture;
     }
@@ -127,7 +144,7 @@ public class VoucherService {
     public CompletableFuture<String> create(Travel travel) {
 
         CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
-                ()->{
+                () -> {
                     Voucher v = new Voucher();
                     v.setTravelId(travel.getOrderNumber());
                     v.setCompany(travel.getCompany());
@@ -143,20 +160,20 @@ public class VoucherService {
     public CompletableFuture<String> uploadFile(String travelId, String file) {
 
         CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
-        ()->{
-            Optional<Voucher> voucher = voucerRepo.findByTravelId(travelId);
-            voucher.orElseThrow(RuntimeException::new);
-            voucher.get().setDocumentSigned(file);
-            voucher.get().setStatus(VoucherStatus.READY);
-            voucerRepo.save(voucher.get());
-            return "file was uploaded";
-        });
+                () -> {
+                    Optional<Voucher> voucher = voucerRepo.findByTravelId(travelId);
+                    voucher.orElseThrow(RuntimeException::new);
+                    voucher.get().setDocumentSigned(file);
+                    voucher.get().setStatus(VoucherStatus.READY);
+                    voucerRepo.save(voucher.get());
+                    return "file was uploaded";
+                });
         return completableFuture;
     }
 
     public CompletableFuture<ResponseEntity> findAll(Pageable pageable) {
 
-        CompletableFuture<ResponseEntity> completableFuture  = CompletableFuture.supplyAsync( ()-> {
+        CompletableFuture<ResponseEntity> completableFuture = CompletableFuture.supplyAsync(() -> {
             Page<Voucher> page = voucerRepo.findAll(pageable);
             return ResponseEntity.ok().body(page);
 
@@ -168,7 +185,7 @@ public class VoucherService {
     public CompletableFuture<String> saveSignatureVoucher(SignatureVoucherDTO signatureVoucherDTO) {
 
         CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
-                ()->{
+                () -> {
                     SignatureVoucher signatureV = new SignatureVoucher();
                     signatureV.setTravelId(signatureVoucherDTO.getTravelId());
                     signatureV.setBase64(signatureVoucherDTO.getBase64());
@@ -177,14 +194,14 @@ public class VoucherService {
                     return "Created";
                 });
 
-        CompletableFuture<Object> notified = completableFuture.thenApply(s-> setSignatureIntoVoucher(signatureVoucherDTO));
+        CompletableFuture<Object> notified = completableFuture.thenApply(s -> setSignatureIntoVoucher(signatureVoucherDTO));
         return completableFuture;
     }
 
-    public CompletableFuture<Void> setSignatureIntoVoucher(SignatureVoucherDTO signatureVoucherDTO){
+    public CompletableFuture<Void> setSignatureIntoVoucher(SignatureVoucherDTO signatureVoucherDTO) {
 
         CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(
-                ()->{
+                () -> {
                     Optional<Voucher> voucher = voucerRepo.findByTravelId(signatureVoucherDTO.getTravelId());
                     voucher.orElseThrow(RuntimeException::new);
                     voucher.get().setDocumentSigned(signatureVoucherDTO.getBase64());
