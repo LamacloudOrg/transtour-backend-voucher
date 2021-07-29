@@ -21,6 +21,7 @@
 	<parameter name="totalAmount" class="java.lang.String"/>
 	<parameter name="bc" class="java.lang.String"/>
 	<parameter name="reserveNumber" class="java.lang.String"/>
+	<parameter name="signature" class="java.lang.String"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -374,8 +375,7 @@ correspondiente factura.]]></text>
 			</textField>
 			<image>
 				<reportElement x="567" y="134" width="188" height="39" uuid="4b96b105-d1ab-4576-87df-461d04b7c4a6"/>
-				<imageExpression><![CDATA[$P{signature}]]>
-				</imageExpression>
+				<imageExpression><![CDATA[$P{signature}]]></imageExpression>
 			</image>
 		</band>
 	</detail>

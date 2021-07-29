@@ -31,5 +31,5 @@ public class TravelDTO implements Serializable {
     public String parkingAmount;
     public String taxForReturn;
     public String totalAmount;
-    public String siganture;
+    public String signature;
 }

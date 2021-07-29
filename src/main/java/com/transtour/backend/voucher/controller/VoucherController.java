@@ -32,17 +32,6 @@ public class VoucherController {
         return service.create(travel);
     }
 
-    /**
-     *  <p>permitira subir la  la firma en base 64</p>
-     * @param file
-     * @return
-     */
-    @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/upload/{travelId}")
-    public CompletableFuture<String> singleFileUpload(@PathVariable("travelId") String travelId, @RequestBody String file ) {
-        return service.uploadFile(travelId,file);
-    }
-
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/downloadPdf/{id}")
     public CompletableFuture<ResponseEntity> generatePdf(@PathVariable("id") String voucherId) throws FileNotFoundException, JRException {
@@ -56,7 +45,7 @@ public class VoucherController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/saveSignature")
-    public CompletableFuture<String> saveSignature(@RequestBody SignatureVoucherDTO signatureVoucherDTO)  {
+    public CompletableFuture<Object> saveSignature(@RequestBody SignatureVoucherDTO signatureVoucherDTO)  {
         return service.saveSignatureVoucher(signatureVoucherDTO);
     }
 

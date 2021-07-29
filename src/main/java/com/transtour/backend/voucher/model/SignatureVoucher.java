@@ -18,11 +18,8 @@ import java.io.Serializable;
 public class SignatureVoucher implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
-
+    String id;
     private String travelId;
-
     @Lob
     private String base64;
     private String contentType;

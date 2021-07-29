@@ -15,6 +15,8 @@ import com.transtour.backend.voucher.repository.IVoucherRepository;
 import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import org.apache.commons.io.FileUtils;
+import org.aspectj.util.FileUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +86,7 @@ public class VoucherService {
 
                     BufferedImage image = null;
                     byte[] imageByte;
+                    String signatureFile =VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now().toString();
 
                     try {
                         BASE64Decoder decoder = new BASE64Decoder();
@@ -91,14 +94,16 @@ public class VoucherService {
                         ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
                         image = ImageIO.read(bis);
 
-                        ImageIO.write(image, "png", new File(VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now()));
+                        ImageIO.write(image, "jpg", new File(signatureFile));
 
                         bis.close();
                     } catch (IOException e) {
                         throw new RuntimeException(e.getLocalizedMessage());
                     }
 
-                    travelDTO.setSiganture(VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now()+".png");
+                    LOG.debug("file "+signatureFile + "exist "+ FileUtils.getFile(signatureFile).exists());
+
+                    travelDTO.setSignature(signatureFile);
 
                     Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
 
@@ -157,20 +162,6 @@ public class VoucherService {
         return completableFuture;
     }
 
-    public CompletableFuture<String> uploadFile(String travelId, String file) {
-
-        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
-                () -> {
-                    Optional<Voucher> voucher = voucerRepo.findByTravelId(travelId);
-                    voucher.orElseThrow(RuntimeException::new);
-                    voucher.get().setDocumentSigned(file);
-                    voucher.get().setStatus(VoucherStatus.READY);
-                    voucerRepo.save(voucher.get());
-                    return "file was uploaded";
-                });
-        return completableFuture;
-    }
-
     public CompletableFuture<ResponseEntity> findAll(Pageable pageable) {
 
         CompletableFuture<ResponseEntity> completableFuture = CompletableFuture.supplyAsync(() -> {
@@ -182,29 +173,32 @@ public class VoucherService {
         return completableFuture;
     }
 
-    public CompletableFuture<String> saveSignatureVoucher(SignatureVoucherDTO signatureVoucherDTO) {
+    public CompletableFuture<Object> saveSignatureVoucher(SignatureVoucherDTO signatureVoucherDTO) {
 
-        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
+        CompletableFuture<SignatureVoucherDTO> completableFuture = CompletableFuture.supplyAsync(
                 () -> {
                     SignatureVoucher signatureV = new SignatureVoucher();
                     signatureV.setTravelId(signatureVoucherDTO.getTravelId());
                     signatureV.setBase64(signatureVoucherDTO.getBase64());
                     signatureV.setContentType(signatureVoucherDTO.getContentType());
                     iSignatureRepo.save(signatureV);
-                    return "Created";
+                    return signatureVoucherDTO;
                 });
 
-        CompletableFuture<Object> notified = completableFuture.thenApply(s -> setSignatureIntoVoucher(signatureVoucherDTO));
-        return completableFuture;
+        CompletableFuture<Object> notified = completableFuture.thenApply(signature -> setSignatureIntoVoucher(signature));
+        return notified;
     }
 
-    public CompletableFuture<Void> setSignatureIntoVoucher(SignatureVoucherDTO signatureVoucherDTO) {
+    public CompletableFuture<Object> setSignatureIntoVoucher(SignatureVoucherDTO signatureVoucherDTO) {
 
-        CompletableFuture<Void> completableFuture = CompletableFuture.runAsync(
+        CompletableFuture<Object> completableFuture = CompletableFuture.supplyAsync(
                 () -> {
                     Optional<Voucher> voucher = voucerRepo.findByTravelId(signatureVoucherDTO.getTravelId());
                     voucher.orElseThrow(RuntimeException::new);
                     voucher.get().setDocumentSigned(signatureVoucherDTO.getBase64());
+                    voucher.get().setStatus(VoucherStatus.READY);
+                    voucerRepo.save(voucher.get());
+                    return "Voucher created";
                 }
         );
         return completableFuture;

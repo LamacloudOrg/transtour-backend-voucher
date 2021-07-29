@@ -1,10 +1,13 @@
 package com.transtour.backend.voucher.util;
 
 import lombok.NonNull;
+
+import javax.swing.text.html.Option;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class VoucherUtil {
 
@@ -16,7 +19,7 @@ public class VoucherUtil {
         Field[] fields =o.getClass().getDeclaredFields();
         Arrays.stream(fields).forEach(field -> {
             try {
-                detail.put(field.getName(), field.get(o).toString());
+                detail.put(field.getName(), Optional.ofNullable(field.get(o).toString()).orElse(""));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
