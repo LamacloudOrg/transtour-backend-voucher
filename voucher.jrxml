@@ -1,8 +1,8 @@
-<?xml version="1.0"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="voucher" language="java" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2adc65a5-c49d-437d-9c99-2001b554d7e1">
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="voucher" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="2adc65a5-c49d-437d-9c99-2001b554d7e1">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="61"/>
+	<property name="ireport.y" value="146"/>
 	<parameter name="orderNumber" class="java.lang.String"/>
 	<parameter name="dateCreated" class="java.lang.String"/>
 	<parameter name="car" class="java.lang.String"/>
@@ -12,12 +12,12 @@
 	<parameter name="passenger" class="java.lang.String"/>
 	<parameter name="originAddress" class="java.lang.String"/>
 	<parameter name="destinyAddress" class="java.lang.String"/>
-	<parameter name="observations" class="java.lang.String"/>
+	<parameter name="observation" class="java.lang.String"/>
 	<parameter name="amount" class="java.lang.String"/>
 	<parameter name="whitingTime" class="java.lang.String"/>
 	<parameter name="toll" class="java.lang.String"/>
-	<parameter name="taxParking" class="java.lang.String"/>
-	<parameter name="taxForBackCompany" class="java.lang.String"/>
+	<parameter name="parkingAmount" class="java.lang.String"/>
+	<parameter name="taxForReturn" class="java.lang.String"/>
 	<parameter name="totalAmount" class="java.lang.String"/>
 	<parameter name="bc" class="java.lang.String"/>
 	<parameter name="reserveNumber" class="java.lang.String"/>
@@ -35,7 +35,7 @@
 			</line>
 			<image>
 				<reportElement x="7" y="7" width="216" height="64" uuid="df824ad1-8b88-4678-816a-484df41f2c3e"/>
-				<imageExpression><![CDATA["/opt/app/transtourImage.png"]]></imageExpression>
+				<imageExpression><![CDATA["./src/main/resources/images/transtourImage.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="237" y="8" width="146" height="63" uuid="637595fb-fa71-4c81-8bac-169319390052"/>
@@ -98,15 +98,18 @@ http://www.bsastranstour.com.ar]]></text>
 				<text><![CDATA[HORA]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="83" y="37" width="68" height="14" uuid="2ed8bd55-b0af-49ec-82f5-3d9f781a5668"/>
+				<reportElement x="60" y="34" width="109" height="20" uuid="2ed8bd55-b0af-49ec-82f5-3d9f781a5668"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$P{car}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="627" y="34" width="91" height="17" uuid="5022bfb7-2cfa-4085-937d-7b52a4438ce1"/>
+				<reportElement x="627" y="34" width="109" height="20" uuid="5022bfb7-2cfa-4085-937d-7b52a4438ce1"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$P{time}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="342" y="34" width="91" height="20" uuid="cd80fd05-0242-4bc7-9d1f-392b5207f1be"/>
+				<reportElement x="280" y="34" width="246" height="20" uuid="cd80fd05-0242-4bc7-9d1f-392b5207f1be"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$P{carDriver}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -117,77 +120,77 @@ http://www.bsastranstour.com.ar]]></text>
 	<detail>
 		<band height="253" splitType="Stretch">
 			<staticText>
-				<reportElement x="7" y="11" width="53" height="20" uuid="e7582e2b-2886-46c9-9009-5881ad39fef6"/>
+				<reportElement x="7" y="15" width="78" height="16" uuid="e7582e2b-2886-46c9-9009-5881ad39fef6"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Empresa:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="31" width="53" height="20" uuid="f3deb3eb-b573-411d-8a71-3082b2c73016"/>
+				<reportElement x="7" y="36" width="78" height="16" uuid="f3deb3eb-b573-411d-8a71-3082b2c73016"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Pasajero:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="51" width="68" height="20" uuid="7b116c98-010c-44dd-83fc-f8d9afefe18a"/>
+				<reportElement x="7" y="57" width="78" height="16" uuid="7b116c98-010c-44dd-83fc-f8d9afefe18a"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Viaje desde:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="71" width="68" height="20" uuid="5a6f80e5-64fd-47c3-8bfa-a2e1ea5ba675"/>
+				<reportElement x="7" y="76" width="78" height="17" uuid="5a6f80e5-64fd-47c3-8bfa-a2e1ea5ba675"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Viaje hasta:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="91" width="88" height="20" uuid="dc40ee5f-0696-456f-8da9-eb5e917bd633"/>
+				<reportElement x="7" y="96" width="93" height="17" uuid="dc40ee5f-0696-456f-8da9-eb5e917bd633"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Observaciones:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="111" width="53" height="20" uuid="683e7fb1-bd21-48fe-9cf5-bd0b6680bfec"/>
+				<reportElement x="7" y="116" width="53" height="18" uuid="683e7fb1-bd21-48fe-9cf5-bd0b6680bfec"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[importe:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="131" width="78" height="20" uuid="1fbdb446-58af-4402-89b3-3c7dbf32cc48"/>
+				<reportElement x="7" y="136" width="67" height="18" uuid="1fbdb446-58af-4402-89b3-3c7dbf32cc48"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[Espera horas:]]></text>
+				<text><![CDATA[Espera hs:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="151" width="53" height="20" uuid="c3cabfb5-a991-4e90-992b-6dc4f6754892"/>
+				<reportElement x="7" y="156" width="53" height="17" uuid="c3cabfb5-a991-4e90-992b-6dc4f6754892"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Peajes:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="171" width="104" height="20" uuid="3b17606f-02b3-458c-a090-2aaa83e82e7c"/>
+				<reportElement x="7" y="176" width="107" height="19" uuid="3b17606f-02b3-458c-a090-2aaa83e82e7c"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[Estacionamiento:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="191" width="182" height="20" uuid="35abc959-9e63-42fd-b0fc-f09c36313ac4"/>
+				<reportElement x="7" y="197" width="132" height="19" uuid="35abc959-9e63-42fd-b0fc-f09c36313ac4"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
-				<text><![CDATA[Recargo por vuelta a la empresa:]]></text>
+				<text><![CDATA[Recargo por vuelta:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="7" y="211" width="78" height="20" uuid="b838af10-084b-489f-b289-ac04628bd9c2"/>
+				<reportElement x="7" y="218" width="93" height="20" uuid="b838af10-084b-489f-b289-ac04628bd9c2"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
@@ -227,39 +230,39 @@ http://www.bsastranstour.com.ar]]></text>
 correspondiente factura.]]></text>
 			</staticText>
 			<line>
-				<reportElement x="83" y="30" width="419" height="1" uuid="2ebc6153-bc79-4c68-81fe-086b706f2ff4"/>
+				<reportElement x="89" y="30" width="413" height="1" uuid="2ebc6153-bc79-4c68-81fe-086b706f2ff4"/>
 			</line>
 			<staticText>
-				<reportElement x="524" y="11" width="29" height="20" uuid="d16be0ca-f3b2-4104-8442-fddb4e65f5c3"/>
+				<reportElement x="538" y="14" width="53" height="18" uuid="d16be0ca-f3b2-4104-8442-fddb4e65f5c3"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[BC:]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="524" y="31" width="63" height="20" uuid="f3264148-3cc3-40d0-b9a8-fc323998e98a"/>
+				<reportElement x="538" y="35" width="84" height="20" uuid="f3264148-3cc3-40d0-b9a8-fc323998e98a"/>
 				<textElement>
 					<font size="12"/>
 				</textElement>
 				<text><![CDATA[N Reserva:]]></text>
 			</staticText>
 			<line>
-				<reportElement x="84" y="50" width="419" height="1" uuid="f64887fd-5e90-45b6-9c2e-8d3a6b9ab8dc"/>
+				<reportElement x="89" y="50" width="414" height="1" uuid="f64887fd-5e90-45b6-9c2e-8d3a6b9ab8dc"/>
 			</line>
 			<line>
-				<reportElement x="606" y="29" width="171" height="1" uuid="0736dfe9-132b-4d1d-b017-b7f465370909"/>
+				<reportElement x="627" y="29" width="150" height="1" uuid="0736dfe9-132b-4d1d-b017-b7f465370909"/>
 			</line>
 			<line>
-				<reportElement x="606" y="49" width="171" height="1" uuid="a5dfeefa-f5bc-4dce-ab5b-055511c0434f"/>
+				<reportElement x="627" y="49" width="150" height="1" uuid="a5dfeefa-f5bc-4dce-ab5b-055511c0434f"/>
 			</line>
 			<line>
-				<reportElement x="85" y="71" width="692" height="1" uuid="d30ff442-0baa-4671-a985-66276c499775"/>
+				<reportElement x="89" y="71" width="688" height="1" uuid="d30ff442-0baa-4671-a985-66276c499775"/>
 			</line>
 			<line>
-				<reportElement x="85" y="90" width="692" height="1" uuid="f71dd000-85a9-4106-9bb5-9a5e3a172a9f"/>
+				<reportElement x="89" y="90" width="688" height="1" uuid="f71dd000-85a9-4106-9bb5-9a5e3a172a9f"/>
 			</line>
 			<line>
-				<reportElement x="85" y="110" width="419" height="1" uuid="43397d22-4731-41fa-b2d5-5c727f425db4"/>
+				<reportElement x="114" y="110" width="390" height="1" uuid="43397d22-4731-41fa-b2d5-5c727f425db4"/>
 			</line>
 			<line>
 				<reportElement x="89" y="131" width="177" height="1" uuid="11dfc1bc-fda7-4a11-91ee-74959aaccb7c"/>
@@ -271,13 +274,13 @@ correspondiente factura.]]></text>
 				<reportElement x="89" y="170" width="177" height="1" uuid="b24e43d4-7ffe-4b0a-ae6a-f6fbcef74477"/>
 			</line>
 			<line>
-				<reportElement x="101" y="190" width="165" height="1" uuid="55a62f8e-8311-4715-8f87-883e92d2b0ea"/>
+				<reportElement x="124" y="190" width="142" height="1" uuid="55a62f8e-8311-4715-8f87-883e92d2b0ea"/>
 			</line>
 			<line>
-				<reportElement x="189" y="210" width="77" height="1" uuid="9b0c2845-c357-4268-9c88-8f9a17593af6"/>
+				<reportElement x="149" y="210" width="117" height="1" uuid="9b0c2845-c357-4268-9c88-8f9a17593af6"/>
 			</line>
 			<line>
-				<reportElement x="89" y="230" width="177" height="1" uuid="f86c4f2d-0d72-40d1-bcfd-6629f9f19635"/>
+				<reportElement x="114" y="230" width="152" height="1" uuid="f86c4f2d-0d72-40d1-bcfd-6629f9f19635"/>
 			</line>
 			<line>
 				<reportElement x="286" y="131" width="213" height="1" uuid="f1a58874-4b7d-4b4d-a79f-30776f4af9a9"/>
@@ -322,59 +325,77 @@ correspondiente factura.]]></text>
 				<reportElement x="286" y="215" width="213" height="16" uuid="b07202aa-7d7e-4b15-b06b-cad8dbdbe2ad"/>
 			</rectangle>
 			<textField>
-				<reportElement x="199" y="11" width="199" height="15" uuid="0b25161e-54ee-46e9-b5ea-d3bd6bbc5979"/>
+				<reportElement x="89" y="11" width="413" height="15" uuid="0b25161e-54ee-46e9-b5ea-d3bd6bbc5979"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{company}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="185" y="32" width="136" height="19" uuid="44eae253-74ba-4a4f-9f25-bea4c3f71d1c"/>
+				<reportElement x="89" y="35" width="414" height="14" uuid="44eae253-74ba-4a4f-9f25-bea4c3f71d1c"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{passenger}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="189" y="57" width="99" height="14" uuid="ca1bdf12-1622-4cdb-ba58-d58a8506df44"/>
+				<reportElement x="89" y="57" width="413" height="14" uuid="ca1bdf12-1622-4cdb-ba58-d58a8506df44"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{originAddress}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="185" y="76" width="126" height="14" uuid="f295f6a3-1558-4a70-9b6e-a21ec278acc3"/>
+				<reportElement x="89" y="76" width="413" height="14" uuid="f295f6a3-1558-4a70-9b6e-a21ec278acc3"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{destinyAddress}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="184" y="95" width="94" height="15" uuid="28e73322-52e6-415c-a420-14fc1ecd4f82"/>
-				<textFieldExpression><![CDATA[$P{observations}]]></textFieldExpression>
+				<reportElement x="114" y="95" width="373" height="16" uuid="28e73322-52e6-415c-a420-14fc1ecd4f82"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$P{observation}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="360" y="114" width="77" height="14" uuid="45543bda-0188-4d38-8025-c0f6187111cd"/>
+				<reportElement x="286" y="114" width="213" height="14" uuid="45543bda-0188-4d38-8025-c0f6187111cd"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{amount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="351" y="135" width="90" height="14" uuid="e99c2802-4852-4463-8904-844c67bb70bb"/>
+				<reportElement x="286" y="135" width="216" height="14" uuid="e99c2802-4852-4463-8904-844c67bb70bb"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{whitingTime}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="352" y="155" width="88" height="13" uuid="4e085717-0e25-4d58-8040-11f3f496c381"/>
+				<reportElement x="286" y="155" width="213" height="13" uuid="4e085717-0e25-4d58-8040-11f3f496c381"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{toll}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="343" y="174" width="92" height="13" uuid="bbc7aaae-f476-41cb-88e3-20a7398accf6"/>
-				<textFieldExpression><![CDATA[$P{taxParking}]]></textFieldExpression>
+				<reportElement x="286" y="174" width="213" height="13" uuid="bbc7aaae-f476-41cb-88e3-20a7398accf6"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$P{parkingAmount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="326" y="195" width="139" height="13" uuid="e8481ee8-031d-42ff-918b-8a7b9cb8cc54"/>
-				<textFieldExpression><![CDATA[$P{taxForBackCompany}]]></textFieldExpression>
+				<reportElement x="286" y="195" width="213" height="13" uuid="e8481ee8-031d-42ff-918b-8a7b9cb8cc54"/>
+				<textElement textAlignment="Center"/>
+				<textFieldExpression><![CDATA[$P{taxForReturn}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="337" y="216" width="98" height="13" uuid="285906c1-3b68-4393-8c3d-5e506d737953"/>
+				<reportElement x="286" y="216" width="213" height="13" uuid="285906c1-3b68-4393-8c3d-5e506d737953"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{totalAmount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="654" y="13" width="88" height="13" uuid="1a6fcff5-85f4-4be6-ba71-4bd16a6ad9b0"/>
+				<reportElement x="627" y="13" width="150" height="13" uuid="1a6fcff5-85f4-4be6-ba71-4bd16a6ad9b0"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{bc}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="637" y="33" width="100" height="13" uuid="409da302-bc16-43ec-b484-bdb8572dbd19"/>
+				<reportElement x="627" y="34" width="150" height="13" uuid="409da302-bc16-43ec-b484-bdb8572dbd19"/>
+				<textElement textAlignment="Center"/>
 				<textFieldExpression><![CDATA[$P{reserveNumber}]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement x="567" y="134" width="188" height="39" uuid="4b96b105-d1ab-4576-87df-461d04b7c4a6"/>
+			<textField>
+				<reportElement x="553" y="199" width="210" height="19" uuid="d1d57590-6f47-498d-8355-403ce8e7d292"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{passenger}]]></textFieldExpression>
+			</textField>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="587" y="134" width="121" height="36" uuid="00d48e6e-4e3b-4778-aaf5-400d65d0e766"/>
 				<imageExpression><![CDATA[$P{signature}]]></imageExpression>
 			</image>
 		</band>
