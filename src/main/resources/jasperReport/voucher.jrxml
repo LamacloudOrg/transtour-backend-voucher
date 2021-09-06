@@ -35,7 +35,7 @@
 			</line>
 			<image>
 				<reportElement x="7" y="7" width="216" height="64" uuid="df824ad1-8b88-4678-816a-484df41f2c3e"/>
-				<imageExpression><![CDATA["./src/main/resources/images/transtourImage.png"]]></imageExpression>
+				<imageExpression><![CDATA["/opt/app/transtourImage.png"]]></imageExpression>
 			</image>
 			<staticText>
 				<reportElement x="237" y="8" width="146" height="63" uuid="637595fb-fa71-4c81-8bac-169319390052"/>
