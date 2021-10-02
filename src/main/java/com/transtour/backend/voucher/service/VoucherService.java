@@ -105,6 +105,12 @@ public class VoucherService {
 
                     travelDTO.setSignature(signatureFile);
 
+                    //TODO saca esto de aca
+                     Double resultAmout = ( Double.parseDouble(travelDTO.amount) + Double.parseDouble(travelDTO.whitingTime) + Double.parseDouble(travelDTO.toll)
+                            + Double.parseDouble(travelDTO.parkingAmount) + Double.parseDouble(travelDTO.taxForReturn) );
+                    travelDTO.totalAmount = Double.toString(resultAmout);
+                    //TODO saca esto de aca
+
                     Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
 
                     pieceFieldDetailsMaps.add(pieceDetailsMap);
