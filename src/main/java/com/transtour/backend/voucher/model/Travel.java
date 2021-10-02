@@ -16,6 +16,7 @@ public class Travel {
     private LocalDate dateCreated;
     private String car;
     private String carDriver;
+    private String carDriverName;
     private LocalTime time;
     private String company;
     private String bc;

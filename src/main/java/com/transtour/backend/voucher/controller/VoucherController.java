@@ -1,7 +1,6 @@
 package com.transtour.backend.voucher.controller;
 
 import com.transtour.backend.voucher.dto.SignatureVoucherDTO;
-import com.transtour.backend.voucher.model.SignatureVoucher;
 import com.transtour.backend.voucher.model.Travel;
 import com.transtour.backend.voucher.service.VoucherService;
 import net.sf.jasperreports.engine.JRException;
