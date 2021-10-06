@@ -16,7 +16,14 @@ import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
-import org.aspectj.util.FileUtil;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +69,8 @@ public class VoucherService {
     @Autowired
     Mapper mapper;
 
+    private static final int IMG_WIDTH = 170;
+    private static final int IMG_HEIGHT = 30;
 
     public CompletableFuture<ResponseEntity> exportVoucher(String voucherId) throws FileNotFoundException, JRException {
         //TODO agregar regla que solo se permita genera el voucher si esta en estado ready
@@ -92,9 +101,11 @@ public class VoucherService {
                         BASE64Decoder decoder = new BASE64Decoder();
                         imageByte = decoder.decodeBuffer(document);
                         ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-                        image = ImageIO.read(bis);
 
-                        ImageIO.write(image, "jpg", new File(signatureFile));
+                        BufferedImage bi = ImageIO.read(bis);
+                        Image newResizedImage = bi.getScaledInstance(IMG_WIDTH, IMG_HEIGHT, Image.SCALE_SMOOTH);
+
+                        ImageIO.write(convertToBufferedImage(newResizedImage), "jpg", new File(signatureFile));
 
                         bis.close();
                     } catch (IOException e) {
@@ -208,5 +219,22 @@ public class VoucherService {
                 }
         );
         return completableFuture;
+    }
+
+    public static BufferedImage convertToBufferedImage(Image img) {
+
+        if (img instanceof BufferedImage) {
+            return (BufferedImage) img;
+        }
+        // Create a buffered image with transparency
+        BufferedImage bi = new BufferedImage(
+                img.getWidth(null), img.getHeight(null),
+                BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D graphics2D = bi.createGraphics();
+        graphics2D.drawImage(img, 0, 0, null);
+        graphics2D.dispose();
+
+        return bi;
     }
 }
