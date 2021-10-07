@@ -95,7 +95,11 @@ public class VoucherService {
 
                     BufferedImage image = null;
                     byte[] imageByte;
-                    String signatureFile =VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now().toString();
+                    //String signatureFile =VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now().toString();
+
+                    String signatureFile =VoucherUtil.path + travel.getOrderNumber();
+
+
 
                     try {
                         BASE64Decoder decoder = new BASE64Decoder();
@@ -229,7 +233,7 @@ public class VoucherService {
         // Create a buffered image with transparency
         BufferedImage bi = new BufferedImage(
                 img.getWidth(null), img.getHeight(null),
-                BufferedImage.TYPE_INT_ARGB);
+                BufferedImage.TYPE_3BYTE_BGR);
 
         Graphics2D graphics2D = bi.createGraphics();
         graphics2D.drawImage(img, 0, 0, null);
