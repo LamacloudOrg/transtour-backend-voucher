@@ -7,9 +7,7 @@
 	<parameter name="dateCreated" class="java.lang.String"/>
 	<parameter name="car" class="java.lang.String"/>
 	<parameter name="time" class="java.lang.String"/>
-	<parameter name="carDriver" class="java.lang.String"/>
-	<parameter name="company" class="java.lang.String"/>
-	<parameter name="passenger" class="java.lang.String"/>
+	<parameter name="carDriverName" class="java.lang.String"/>
 	<parameter name="originAddress" class="java.lang.String"/>
 	<parameter name="destinyAddress" class="java.lang.String"/>
 	<parameter name="observation" class="java.lang.String"/>
@@ -42,7 +40,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Tel: 0810-444-7287
 Solo emergencias:
-1163846777
+1140377287
 bsastranstour@hotmail.com
 http://www.bsastranstour.com.ar]]></text>
 			</staticText>
@@ -110,7 +108,7 @@ http://www.bsastranstour.com.ar]]></text>
 			<textField>
 				<reportElement x="280" y="34" width="246" height="20" uuid="cd80fd05-0242-4bc7-9d1f-392b5207f1be"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{carDriver}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{carDriverName}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>
