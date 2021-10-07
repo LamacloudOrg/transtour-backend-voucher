@@ -8,6 +8,8 @@
 	<parameter name="car" class="java.lang.String"/>
 	<parameter name="time" class="java.lang.String"/>
 	<parameter name="carDriverName" class="java.lang.String"/>
+	<parameter name="company" class="java.lang.String"/>
+	<parameter name="passenger" class="java.lang.String"/>
 	<parameter name="originAddress" class="java.lang.String"/>
 	<parameter name="destinyAddress" class="java.lang.String"/>
 	<parameter name="observation" class="java.lang.String"/>
@@ -40,7 +42,7 @@
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<text><![CDATA[Tel: 0810-444-7287
 Solo emergencias:
-1140377287
+1163846777
 bsastranstour@hotmail.com
 http://www.bsastranstour.com.ar]]></text>
 			</staticText>
