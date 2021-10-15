@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
 
-
+@CrossOrigin(value = {"*"}, exposedHeaders = {"Content-Disposition"})
 @RequestMapping(path = "/v1/voucher")
 @RestController
 public class VoucherController {
