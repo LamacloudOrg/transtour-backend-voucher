@@ -84,6 +84,9 @@ public class VoucherService {
 
                     TravelDTO travelDTO = new TravelDTO();
 
+                    //TODO sacar esto de aca
+                    travelDTO.setReserveNumber(travel.getOrderNumber());
+
                     mapper.map(travel, travelDTO);
 
                     String document = voucher.get().getDocumentSigned();
@@ -94,15 +97,13 @@ public class VoucherService {
 
                     String signatureFile =VoucherUtil.path + travel.getOrderNumber();
 
-
-
                     try {
                         BASE64Decoder decoder = new BASE64Decoder();
                         imageByte = decoder.decodeBuffer(document);
                         ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
 
                         BufferedImage bi = ImageIO.read(bis);
-                        Image newResizedImage = bi.getScaledInstance(IMG_WIDTH, IMG_HEIGHT, Image.SCALE_SMOOTH);
+                        Image newResizedImage = bi.getScaledInstance(IMG_WIDTH, IMG_HEIGHT, Image.SCALE_AREA_AVERAGING);
 
                         ImageIO.write(convertToBufferedImage(newResizedImage), "jpg", new File(signatureFile));
 
