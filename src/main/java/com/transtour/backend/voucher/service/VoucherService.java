@@ -64,8 +64,8 @@ public class VoucherService {
     @Autowired
     Mapper mapper;
 
-    private static final int IMG_WIDTH = 170;
-    private static final int IMG_HEIGHT = 30;
+    private static final int IMG_WIDTH = 600;
+    private static final int IMG_HEIGHT = 300;
 
     public CompletableFuture<ResponseEntity> exportVoucher(String voucherId) throws FileNotFoundException, JRException {
         //TODO agregar regla que solo se permita genera el voucher si esta en estado ready
