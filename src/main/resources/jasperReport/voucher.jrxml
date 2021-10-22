@@ -394,7 +394,7 @@ correspondiente factura.]]></text>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$P{passenger}]]></textFieldExpression>
 			</textField>
-			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+			<image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
 				<reportElement x="567" y="135" width="180" height="36" uuid="00d48e6e-4e3b-4778-aaf5-400d65d0e766"/>
 				<imageExpression><![CDATA[$P{signature}]]></imageExpression>
 			</image>
