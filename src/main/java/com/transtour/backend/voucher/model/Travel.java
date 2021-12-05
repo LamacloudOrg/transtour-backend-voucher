@@ -31,5 +31,5 @@ public class Travel {
     private String parkingAmount;
     private String taxForReturn;
     private String totalAmount;
-
+    private String hours;
 }

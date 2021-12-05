@@ -36,6 +36,7 @@ import org.springframework.util.ResourceUtils;
 import sun.misc.BASE64Decoder;
 import java.io.*;
 import java.nio.file.Files;
+import java.security.interfaces.DSAPublicKey;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -89,6 +90,7 @@ public class VoucherService {
 
                     mapper.map(travel, travelDTO);
 
+
                     String document = voucher.get().getDocumentSigned();
 
                     BufferedImage image = null;
@@ -117,7 +119,25 @@ public class VoucherService {
                     travelDTO.setSignature(signatureFile);
 
                     //TODO saca esto de aca
-                     Double resultAmout = ( Double.parseDouble(travelDTO.amount) + Double.parseDouble(travelDTO.whitingTime) + Double.parseDouble(travelDTO.toll)
+
+                    String hora = String.valueOf(travelDTO.whitingTime.charAt(0));
+                    int horaEsperaNumerica = Integer.parseInt(hora);
+
+                    String minutos = travelDTO.whitingTime.substring(2, 4);
+                    int minutosEsperaNumerico = Integer.parseInt(minutos);
+
+                    String precio = travelDTO.whitingTime.substring(5, travelDTO.whitingTime.length());
+                    Double precioEsperaNumerico = Double.parseDouble(precio);
+
+                    if (horaEsperaNumerica != 0) {
+                        precioEsperaNumerico = precioEsperaNumerico * horaEsperaNumerica;
+                    }
+                    calcularMinutos(minutosEsperaNumerico, precioEsperaNumerico);
+
+                    travelDTO.setWhitingTime(precioEsperaNumerico.toString());
+                    travelDTO.setHours(hora + " : " + minutos);
+
+                    Double resultAmout = ( Double.parseDouble(travelDTO.amount) + precioEsperaNumerico + Double.parseDouble(travelDTO.toll)
                             + Double.parseDouble(travelDTO.parkingAmount) + Double.parseDouble(travelDTO.taxForReturn) );
                     travelDTO.totalAmount = Double.toString(resultAmout);
                     //TODO saca esto de aca
@@ -236,5 +256,19 @@ public class VoucherService {
         graphics2D.dispose();
 
         return bi;
+    }
+
+    public Double calcularMinutos (int minutosEsperaNumerico, double precioEsperaNumerico) {
+        switch (minutosEsperaNumerico) {
+            case 00:
+                return (precioEsperaNumerico);
+            case 15:
+                return (precioEsperaNumerico + precioEsperaNumerico * 1 / 4);
+            case 30:
+                return (precioEsperaNumerico + precioEsperaNumerico * 1 / 2);
+            case 45:
+                return (precioEsperaNumerico + precioEsperaNumerico * 3 / 4);
+        }
+        return precioEsperaNumerico;
     }
 }

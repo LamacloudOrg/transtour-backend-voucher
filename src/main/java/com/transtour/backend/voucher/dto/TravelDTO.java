@@ -33,4 +33,5 @@ public class TravelDTO implements Serializable {
     public String taxForReturn;
     public String totalAmount;
     public String signature;
+    public String hours;
 }
