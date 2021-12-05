@@ -120,13 +120,14 @@ public class VoucherService {
 
                     //TODO saca esto de aca
 
-                    String hora = String.valueOf(travelDTO.whitingTime.charAt(0));
+                  //  String hora = String.valueOf(travelDTO.whitingTime.charAt(0));
+                    String hora = travelDTO.whitingTime.substring(0, 2);
                     int horaEsperaNumerica = Integer.parseInt(hora);
 
-                    String minutos = travelDTO.whitingTime.substring(2, 4);
+                    String minutos = travelDTO.whitingTime.substring(3, 5);
                     int minutosEsperaNumerico = Integer.parseInt(minutos);
 
-                    String precio = travelDTO.whitingTime.substring(5, travelDTO.whitingTime.length());
+                    String precio = travelDTO.whitingTime.substring(6);
                     Double precioEsperaNumerico = Double.parseDouble(precio);
 
                     if (horaEsperaNumerica != 0) {
