@@ -35,8 +35,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import sun.misc.BASE64Decoder;
 import java.io.*;
+import java.math.RoundingMode;
 import java.nio.file.Files;
 import java.security.interfaces.DSAPublicKey;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -67,6 +69,8 @@ public class VoucherService {
 
     private static final int IMG_WIDTH = 600;
     private static final int IMG_HEIGHT = 300;
+
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
     public CompletableFuture<ResponseEntity> exportVoucher(String voucherId) throws FileNotFoundException, JRException {
         //TODO agregar regla que solo se permita genera el voucher si esta en estado ready
@@ -119,28 +123,35 @@ public class VoucherService {
                     travelDTO.setSignature(signatureFile);
 
                     //TODO saca esto de aca
-
-                  //  String hora = String.valueOf(travelDTO.whitingTime.charAt(0));
+                    //get hour from string example "1:15-1000"
                     String hora = travelDTO.whitingTime.substring(0, 2);
-                    int horaEsperaNumerica = Integer.parseInt(hora);
+                    int cantHoras = Integer.parseInt(hora);
 
-                    String minutos = travelDTO.whitingTime.substring(3, 5);
-                    int minutosEsperaNumerico = Integer.parseInt(minutos);
+                    String minuto = travelDTO.whitingTime.substring(3, 5);
+                    int cantMinutos = Integer.parseInt(minuto);
 
                     String precio = travelDTO.whitingTime.substring(6);
-                    Double precioEsperaNumerico = Double.parseDouble(precio);
+                    Double valorHora = Double.parseDouble(precio);
 
-                    if (horaEsperaNumerica != 0) {
-                        precioEsperaNumerico = precioEsperaNumerico * horaEsperaNumerica;
+                    Double precioEsperaNumerico = 0.0;
+                    Double precioMinutos = 0.0;
+
+                    if (cantHoras != 0) {
+                        precioEsperaNumerico = valorHora * cantHoras;
                     }
-                    calcularMinutos(minutosEsperaNumerico, precioEsperaNumerico);
+                    precioMinutos = calcularMinutos(cantMinutos, valorHora);
 
-                    travelDTO.setWhitingTime(precioEsperaNumerico.toString());
-                    travelDTO.setHours(hora + " : " + minutos);
+                    Double total = precioEsperaNumerico + precioMinutos;
 
-                    Double resultAmout = ( Double.parseDouble(travelDTO.amount) + precioEsperaNumerico + Double.parseDouble(travelDTO.toll)
+                    travelDTO.setWhitingTime(total.toString());
+                    travelDTO.setHours(hora + " : " + minuto);
+
+                    Double resultAmount = ( Double.parseDouble(travelDTO.amount) + total + Double.parseDouble(travelDTO.toll)
                             + Double.parseDouble(travelDTO.parkingAmount) + Double.parseDouble(travelDTO.taxForReturn) );
-                    travelDTO.totalAmount = Double.toString(resultAmout);
+
+                    df.setRoundingMode(RoundingMode.UP);
+                    travelDTO.totalAmount =  df.format(resultAmount).toString();
+                    //travelDTO.totalAmount = Double.toString(resultAmount);
                     //TODO saca esto de aca
 
                     Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
@@ -259,17 +270,17 @@ public class VoucherService {
         return bi;
     }
 
-    public Double calcularMinutos (int minutosEsperaNumerico, double precioEsperaNumerico) {
-        switch (minutosEsperaNumerico) {
-            case 00:
-                return (precioEsperaNumerico);
+    public Double calcularMinutos (int cantMinutos, double valorHora) {
+        switch (cantMinutos) {
+            case 0:
+                return 0.0;
             case 15:
-                return (precioEsperaNumerico + precioEsperaNumerico * 1 / 4);
+                return (valorHora / 4);
             case 30:
-                return (precioEsperaNumerico + precioEsperaNumerico * 1 / 2);
+                return (valorHora / 2);
             case 45:
-                return (precioEsperaNumerico + precioEsperaNumerico * 3 / 4);
+                return (valorHora / 4) + (valorHora / 2);
         }
-        return precioEsperaNumerico;
+        return valorHora;
     }
 }
