@@ -18,9 +18,9 @@ import java.util.List;
 @Document("voucher")
 public class Voucher implements Serializable {
     @Id
-    String id;
+    Long id;
     VoucherStatus status;
-    String travelId;
+    Long travelId;
     String voucher;
     String documentSigned;
     String company;

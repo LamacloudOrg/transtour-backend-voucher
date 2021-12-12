@@ -90,7 +90,7 @@ public class VoucherService {
                     TravelDTO travelDTO = new TravelDTO();
 
                     //TODO sacar esto de aca
-                    travelDTO.setReserveNumber(travel.getOrderNumber());
+                    travelDTO.setReserveNumber(travel.getReserveNumber());
 
                     mapper.map(travel, travelDTO);
 
@@ -195,9 +195,9 @@ public class VoucherService {
         return completableFuture;
     }
 
-    public CompletableFuture<String> create(Travel travel) {
+    public CompletableFuture<Long> create(Travel travel) {
 
-        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(
+        CompletableFuture<Long> completableFuture = CompletableFuture.supplyAsync(
                 () -> {
                     Voucher v = new Voucher();
                     v.setTravelId(travel.getOrderNumber());

@@ -12,5 +12,5 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface ITravelRepo {
 
     @RequestMapping(method= RequestMethod.GET,value = "/v1/travel/{travelId}")
-    Travel getTravel(@PathVariable String travelId);
+    Travel getTravel(@PathVariable Long travelId);
 }

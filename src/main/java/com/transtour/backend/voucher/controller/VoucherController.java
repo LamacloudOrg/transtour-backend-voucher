@@ -27,7 +27,7 @@ public class VoucherController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/create")
-    public CompletableFuture<String> create(@RequestBody Travel travel)  {
+    public CompletableFuture<Long> create(@RequestBody Travel travel)  {
         return service.create(travel);
     }
 
