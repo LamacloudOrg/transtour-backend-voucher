@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.io.FileNotFoundException;
 import java.util.concurrent.CompletableFuture;
 
@@ -21,13 +22,13 @@ public class VoucherController {
     VoucherService service;
 
     @GetMapping
-    public String health(){
+    public String health() {
         return "working";
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/create")
-    public CompletableFuture<Long> create(@RequestBody Travel travel)  {
+    public CompletableFuture<Long> create(@RequestBody Travel travel) {
         return service.create(travel);
     }
 
@@ -38,13 +39,13 @@ public class VoucherController {
     }
 
     @GetMapping("/list")
-    public CompletableFuture<ResponseEntity> list (Pageable pageable) throws Exception {
+    public CompletableFuture<ResponseEntity> list(Pageable pageable) throws Exception {
         return service.findAll(pageable);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/saveSignature")
-    public CompletableFuture<Object> saveSignature(@RequestBody SignatureVoucherDTO signatureVoucherDTO)  {
+    public CompletableFuture<Object> saveSignature(@RequestBody SignatureVoucherDTO signatureVoucherDTO) {
         return service.saveSignatureVoucher(signatureVoucherDTO);
     }
 

@@ -16,11 +16,6 @@ import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +29,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import sun.misc.BASE64Decoder;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.RoundingMode;
 import java.nio.file.Files;
-import java.security.interfaces.DSAPublicKey;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -101,7 +99,7 @@ public class VoucherService {
                     byte[] imageByte;
                     //String signatureFile =VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now().toString();
 
-                    String signatureFile =VoucherUtil.path + travel.getOrderNumber();
+                    String signatureFile = VoucherUtil.path + travel.getOrderNumber();
 
                     try {
                         BASE64Decoder decoder = new BASE64Decoder();
@@ -118,7 +116,7 @@ public class VoucherService {
                         throw new RuntimeException(e.getLocalizedMessage());
                     }
 
-                    LOG.debug("file "+signatureFile + "exist "+ FileUtils.getFile(signatureFile).exists());
+                    LOG.debug("file " + signatureFile + "exist " + FileUtils.getFile(signatureFile).exists());
 
                     travelDTO.setSignature(signatureFile);
 
@@ -146,11 +144,11 @@ public class VoucherService {
                     travelDTO.setWhitingTime(total.toString());
                     travelDTO.setHours(hora + " : " + minuto);
 
-                    Double resultAmount = ( Double.parseDouble(travelDTO.amount) + total + Double.parseDouble(travelDTO.toll)
-                            + Double.parseDouble(travelDTO.parkingAmount) + Double.parseDouble(travelDTO.taxForReturn) );
+                    Double resultAmount = (Double.parseDouble(travelDTO.amount) + total + Double.parseDouble(travelDTO.toll)
+                            + Double.parseDouble(travelDTO.parkingAmount) + Double.parseDouble(travelDTO.taxForReturn));
 
                     df.setRoundingMode(RoundingMode.UP);
-                    travelDTO.totalAmount =  df.format(resultAmount).toString();
+                    travelDTO.totalAmount = df.format(resultAmount).toString();
                     //travelDTO.totalAmount = Double.toString(resultAmount);
                     //TODO saca esto de aca
 
@@ -270,7 +268,7 @@ public class VoucherService {
         return bi;
     }
 
-    public Double calcularMinutos (int cantMinutos, double valorHora) {
+    public Double calcularMinutos(int cantMinutos, double valorHora) {
         switch (cantMinutos) {
             case 0:
                 return 0.0;

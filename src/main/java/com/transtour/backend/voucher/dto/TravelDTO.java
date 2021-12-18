@@ -4,10 +4,8 @@ package com.transtour.backend.voucher.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.File;
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @NoArgsConstructor

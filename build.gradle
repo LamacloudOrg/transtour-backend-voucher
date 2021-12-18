@@ -1,8 +1,8 @@
 plugins {
-	id 'org.springframework.boot' version '2.4.5-SNAPSHOT'
-	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id 'java'
-	id 'idea'
+    id 'org.springframework.boot' version '2.4.5-SNAPSHOT'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'idea'
 }
 
 group = 'com.transtour.backend'
@@ -10,16 +10,16 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 repositories {
-	mavenCentral()
-	maven { url 'https://repo.spring.io/milestone' }
-	maven { url 'https://repo.spring.io/snapshot' }
-	maven { url "http://jasperreports.sourceforge.net/maven2/"}
-	maven { url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/"}
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+    maven { url 'https://repo.spring.io/snapshot' }
+    maven { url "http://jasperreports.sourceforge.net/maven2/" }
+    maven { url "http://jaspersoft.artifactoryonline.com/jaspersoft/third-party-ce-artifacts/" }
 }
 
 ext {
-	set('springCloudVersion', "2020.0.2")
-	set('queryDslVersion','4.2.2')
+    set('springCloudVersion', "2020.0.2")
+    set('queryDslVersion', '4.2.2')
 //	set('springCloudVersion', "Hoxton.SR9")
 //	set('javaxVersion','1.3.1')
 //	set('morfiacore','1.5.3')
@@ -28,50 +28,50 @@ ext {
 
 dependencies {
 //	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 //	implementation 'com.github.spullara.mustache.java:compiler:0.9.4'
-	implementation 'net.sf.jasperreports:jasperreports:6.17.0'
-	implementation group: 'com.lowagie', name: 'itext', version: '2.1.7'
-	implementation 'xml-apis:xml-apis:2.0.2'
-	implementation 'org.projectlombok:lombok'
-	implementation 'com.querydsl:querydsl-core:4.2.2'
-	implementation 'com.querydsl:querydsl-collections:4.2.2'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix:2.2.7.RELEASE'
-	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
-	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.github.dozermapper:dozer-core:6.5.0'
-	implementation group: 'com.lowagie', name: 'itext', version: '2.1.7'
-	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
-	annotationProcessor 'org.projectlombok:lombok'
-	compileOnly('org.springframework.boot:spring-boot-starter-web') {
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-	}
-	compileOnly('org.springframework.boot:spring-boot-starter-log4j2')
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'net.sf.jasperreports:jasperreports:6.17.0'
+    implementation group: 'com.lowagie', name: 'itext', version: '2.1.7'
+    implementation 'xml-apis:xml-apis:2.0.2'
+    implementation 'org.projectlombok:lombok'
+    implementation 'com.querydsl:querydsl-core:4.2.2'
+    implementation 'com.querydsl:querydsl-collections:4.2.2'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-hystrix:2.2.7.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'com.github.dozermapper:dozer-core:6.5.0'
+    implementation group: 'com.lowagie', name: 'itext', version: '2.1.7'
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.3'
+    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly('org.springframework.boot:spring-boot-starter-web') {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+    }
+    compileOnly('org.springframework.boot:spring-boot-starter-log4j2')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }
 
 idea {
-	module {
-		sourceDirs += file('generated/')
-		generatedSourceDirs += file('generated/')
-	}
+    module {
+        sourceDirs += file('generated/')
+        generatedSourceDirs += file('generated/')
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 dependencyManagement {
-	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-	}
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
 }

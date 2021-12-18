@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Qualifier("SignatureVoucherRepo")
 @Repository
-public interface ISignatureVoucherRepository extends MongoRepository<SignatureVoucher,Integer> {
+public interface ISignatureVoucherRepository extends MongoRepository<SignatureVoucher, Integer> {
 }

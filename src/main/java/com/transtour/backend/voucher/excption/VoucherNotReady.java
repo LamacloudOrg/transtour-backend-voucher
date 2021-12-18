@@ -1,8 +1,8 @@
 package com.transtour.backend.voucher.excption;
 
-public class VoucherNotReady extends RuntimeException{
+public class VoucherNotReady extends RuntimeException {
 
-    public VoucherNotReady(){
+    public VoucherNotReady() {
         super("Voucher is not ready");
     }
 }

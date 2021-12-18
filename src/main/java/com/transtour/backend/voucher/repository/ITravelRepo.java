@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @FeignClient(name = "SPRING-CLOUD-TRAVEL-API")
 public interface ITravelRepo {
 
-    @RequestMapping(method= RequestMethod.GET,value = "/v1/travel/{travelId}")
+    @RequestMapping(method = RequestMethod.GET, value = "/v1/travel/{travelId}")
     Travel getTravel(@PathVariable Long travelId);
 }

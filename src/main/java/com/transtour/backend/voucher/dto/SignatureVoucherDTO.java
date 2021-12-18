@@ -2,6 +2,7 @@ package com.transtour.backend.voucher.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 @NoArgsConstructor
