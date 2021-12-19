@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 public class SignatureVoucherDTO implements Serializable {
 
-    private String travelId;
+    private Long travelId;
     private String base64;
     private String contentType;
 }

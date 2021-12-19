@@ -12,6 +12,8 @@ import com.transtour.backend.voucher.model.VoucherStatus;
 import com.transtour.backend.voucher.repository.ISignatureVoucherRepository;
 import com.transtour.backend.voucher.repository.ITravelRepo;
 import com.transtour.backend.voucher.repository.IVoucherRepository;
+import com.transtour.backend.voucher.util.CostHourUtil;
+import com.transtour.backend.voucher.util.ImageUtil;
 import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -65,8 +67,6 @@ public class VoucherService {
     @Autowired
     Mapper mapper;
 
-    private static final int IMG_WIDTH = 600;
-    private static final int IMG_HEIGHT = 300;
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
@@ -77,7 +77,7 @@ public class VoucherService {
                 () -> {
                     ArrayList<Map<String, Object>> pieceFieldDetailsMaps = new ArrayList<Map<String, Object>>();
 
-                    Optional<Voucher> voucher = voucerRepo.findByTravelId(voucherId);
+                    Optional<Voucher> voucher = voucerRepo.findByTravelId(Long.valueOf(voucherId));
 
                     voucher.orElseThrow(RuntimeException::new);
 
@@ -87,60 +87,27 @@ public class VoucherService {
 
                     TravelDTO travelDTO = new TravelDTO();
 
-                    //TODO sacar esto de aca
                     travelDTO.setReserveNumber(travel.getReserveNumber());
-
                     mapper.map(travel, travelDTO);
-
-
                     String document = voucher.get().getDocumentSigned();
-
-                    BufferedImage image = null;
-                    byte[] imageByte;
-                    //String signatureFile =VoucherUtil.path + travel.getOrderNumber() + "-" + LocalDateTime.now().toString();
-
                     String signatureFile = VoucherUtil.path + travel.getOrderNumber();
 
                     try {
-                        BASE64Decoder decoder = new BASE64Decoder();
-                        imageByte = decoder.decodeBuffer(document);
-                        ByteArrayInputStream bis = new ByteArrayInputStream(imageByte);
-
-                        BufferedImage bi = ImageIO.read(bis);
-                        Image newResizedImage = bi.getScaledInstance(IMG_WIDTH, IMG_HEIGHT, Image.SCALE_AREA_AVERAGING);
-
-                        ImageIO.write(convertToBufferedImage(newResizedImage), "jpg", new File(signatureFile));
-
-                        bis.close();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e.getLocalizedMessage());
+                        ImageIO.write(ImageUtil.convertToBufferedImage(ImageUtil.resizeImage(document)), "jpg", new File(signatureFile));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e.getCause());
                     }
 
                     LOG.debug("file " + signatureFile + "exist " + FileUtils.getFile(signatureFile).exists());
 
                     travelDTO.setSignature(signatureFile);
 
-                    //TODO saca esto de aca
-                    //get hour from string example "1:15-1000"
                     String hora = travelDTO.whitingTime.substring(0, 2);
                     int cantHoras = Integer.parseInt(hora);
 
                     String minuto = travelDTO.whitingTime.substring(3, 5);
                     int cantMinutos = Integer.parseInt(minuto);
-
-                    String precio = travelDTO.whitingTime.substring(6);
-                    Double valorHora = Double.parseDouble(precio);
-
-                    Double precioEsperaNumerico = 0.0;
-                    Double precioMinutos = 0.0;
-
-                    if (cantHoras != 0) {
-                        precioEsperaNumerico = valorHora * cantHoras;
-                    }
-                    precioMinutos = calcularMinutos(cantMinutos, valorHora);
-
-                    Double total = precioEsperaNumerico + precioMinutos;
-
+                    Double total = CostHourUtil.calculateCost(travelDTO);
                     travelDTO.setWhitingTime(total.toString());
                     travelDTO.setHours(hora + " : " + minuto);
 
@@ -149,8 +116,6 @@ public class VoucherService {
 
                     df.setRoundingMode(RoundingMode.UP);
                     travelDTO.totalAmount = df.format(resultAmount).toString();
-                    //travelDTO.totalAmount = Double.toString(resultAmount);
-                    //TODO saca esto de aca
 
                     Map pieceDetailsMap = VoucherUtil.mapDetail(travelDTO);
 
@@ -204,7 +169,7 @@ public class VoucherService {
                     v.setTime(LocalDateTime.now());
                     v.setStatus(VoucherStatus.CREATED);
                     voucerRepo.save(v);
-                    return v.getId();
+                    return v.getTravelId();
                 });
         return completableFuture;
     }
@@ -251,34 +216,4 @@ public class VoucherService {
         return completableFuture;
     }
 
-    public static BufferedImage convertToBufferedImage(Image img) {
-
-        if (img instanceof BufferedImage) {
-            return (BufferedImage) img;
-        }
-        // Create a buffered image with transparency
-        BufferedImage bi = new BufferedImage(
-                img.getWidth(null), img.getHeight(null),
-                BufferedImage.TYPE_3BYTE_BGR);
-
-        Graphics2D graphics2D = bi.createGraphics();
-        graphics2D.drawImage(img, 0, 0, null);
-        graphics2D.dispose();
-
-        return bi;
-    }
-
-    public Double calcularMinutos(int cantMinutos, double valorHora) {
-        switch (cantMinutos) {
-            case 0:
-                return 0.0;
-            case 15:
-                return (valorHora / 4);
-            case 30:
-                return (valorHora / 2);
-            case 45:
-                return (valorHora / 4) + (valorHora / 2);
-        }
-        return valorHora;
-    }
 }

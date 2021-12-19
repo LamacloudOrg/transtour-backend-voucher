@@ -16,8 +16,7 @@ import java.io.Serializable;
 public class SignatureVoucher implements Serializable {
 
     @Id
-    String id;
-    private String travelId;
+    private Long travelId;
     @Lob
     private String base64;
     private String contentType;

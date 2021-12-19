@@ -10,8 +10,8 @@ import java.util.Optional;
 
 @Qualifier("VoucherRepo")
 @Repository
-public interface IVoucherRepository extends MongoRepository<Voucher, String> {
+public interface IVoucherRepository extends MongoRepository<Voucher, Long> {
 
-    Optional<Voucher> findByTravelId(String travelId);
+    Optional<Voucher> findByTravelId(Long travelId);
 
 }

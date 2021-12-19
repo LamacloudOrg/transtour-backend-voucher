@@ -17,9 +17,8 @@ import java.time.LocalDateTime;
 @Document("voucher")
 public class Voucher implements Serializable {
     @Id
-    Long id;
-    VoucherStatus status;
     Long travelId;
+    VoucherStatus status;
     String voucher;
     String documentSigned;
     String company;
