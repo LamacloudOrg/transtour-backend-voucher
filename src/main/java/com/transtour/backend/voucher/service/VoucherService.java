@@ -14,6 +14,7 @@ import com.transtour.backend.voucher.repository.ITravelRepo;
 import com.transtour.backend.voucher.repository.IVoucherRepository;
 import com.transtour.backend.voucher.util.CostHourUtil;
 import com.transtour.backend.voucher.util.ImageUtil;
+import com.transtour.backend.voucher.util.JasperReportUtil;
 import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
@@ -33,8 +34,6 @@ import org.springframework.util.ResourceUtils;
 import sun.misc.BASE64Decoder;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.math.RoundingMode;
 import java.nio.file.Files;
@@ -123,13 +122,8 @@ public class VoucherService {
                     String fileName = travelDTO.dateCreated.toString() + "-" + travelDTO.time.toString() + "-" + travelDTO.company + "-" + travelDTO.orderNumber;
 
                     try {
-                        File jasper = ResourceUtils.getFile(VoucherUtil.jasperFile);
 
-                        JasperReport jasperReport = JasperCompileManager.compileReport(jasper.getAbsolutePath());
-                        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(pieceFieldDetailsMaps);
-
-                        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, pieceDetailsMap, dataSource);
-                        JasperExportManager.exportReportToPdfFile(jasperPrint, VoucherUtil.path + fileName);
+                        JasperReportUtil.generate(fileName,pieceFieldDetailsMaps,pieceDetailsMap);
 
                         File pdf = new File(VoucherUtil.path + fileName);
 
