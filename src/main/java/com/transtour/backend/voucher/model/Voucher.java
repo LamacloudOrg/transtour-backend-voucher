@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @QueryEntity
 @Document("voucher")
 public class Voucher implements Serializable {
-
+    @Id
     Long travelId;
     VoucherStatus status;
     String voucher;
