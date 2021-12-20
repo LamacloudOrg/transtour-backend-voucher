@@ -69,7 +69,7 @@ public class VoucherService {
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
-    public CompletableFuture<ResponseEntity> exportVoucher(String voucherId) throws FileNotFoundException, JRException {
+    public CompletableFuture<ResponseEntity> exportVoucher(Long voucherId) throws FileNotFoundException, JRException {
         //TODO agregar regla que solo se permita genera el voucher si esta en estado ready
 
         CompletableFuture<ResponseEntity> completableFuture = CompletableFuture.supplyAsync(

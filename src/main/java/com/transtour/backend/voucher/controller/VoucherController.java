@@ -34,7 +34,7 @@ public class VoucherController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/downloadPdf/{id}")
-    public CompletableFuture<ResponseEntity> generatePdf(@PathVariable("id") String voucherId) throws FileNotFoundException, JRException {
+    public CompletableFuture<ResponseEntity> generatePdf(@PathVariable("id") Long voucherId) throws FileNotFoundException, JRException {
         return service.exportVoucher(voucherId);
     }
 
