@@ -1,14 +1,11 @@
 package com.transtour.backend.voucher.service;
 
-
 import com.github.dozermapper.core.Mapper;
 import com.transtour.backend.voucher.dto.SignatureVoucherDTO;
 import com.transtour.backend.voucher.dto.TravelDTO;
 import com.transtour.backend.voucher.excption.VoucherNotReady;
-import com.transtour.backend.voucher.model.SignatureVoucher;
-import com.transtour.backend.voucher.model.Travel;
-import com.transtour.backend.voucher.model.Voucher;
-import com.transtour.backend.voucher.model.VoucherStatus;
+import com.transtour.backend.voucher.model.*;
+import com.transtour.backend.voucher.repository.ICompanyRepository;
 import com.transtour.backend.voucher.repository.ISignatureVoucherRepository;
 import com.transtour.backend.voucher.repository.ITravelRepo;
 import com.transtour.backend.voucher.repository.IVoucherRepository;
@@ -17,7 +14,6 @@ import com.transtour.backend.voucher.util.ImageUtil;
 import com.transtour.backend.voucher.util.JasperReportUtil;
 import com.transtour.backend.voucher.util.VoucherUtil;
 import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +26,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
-import sun.misc.BASE64Decoder;
-
 import javax.imageio.ImageIO;
 import java.io.*;
 import java.math.RoundingMode;
@@ -63,9 +56,12 @@ public class VoucherService {
     @Autowired
     ISignatureVoucherRepository iSignatureRepo;
 
+    @Qualifier("CompanyRepo")
+    @Autowired
+    ICompanyRepository companyRepo;
+
     @Autowired
     Mapper mapper;
-
 
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
@@ -102,11 +98,13 @@ public class VoucherService {
                     travelDTO.setSignature(signatureFile);
 
                     String hora = travelDTO.whitingTime.substring(0, 2);
-                    int cantHoras = Integer.parseInt(hora);
-
+                 // int cantHoras = Integer.parseInt(hora);
                     String minuto = travelDTO.whitingTime.substring(3, 5);
-                    int cantMinutos = Integer.parseInt(minuto);
-                    Double total = CostHourUtil.calculateCost(travelDTO);
+                 // int cantMinutos = Integer.parseInt(minuto);
+
+                    Company company = companyRepo.getCompany(voucher.get().getCompany());
+
+                    Double total = CostHourUtil.calculateCost(travelDTO, company);
                     travelDTO.setWhitingTime(total.toString());
                     travelDTO.setHours(hora + " : " + minuto);
 
