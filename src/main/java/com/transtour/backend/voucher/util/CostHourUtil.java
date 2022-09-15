@@ -1,10 +1,11 @@
 package com.transtour.backend.voucher.util;
 
 import com.transtour.backend.voucher.dto.TravelDTO;
+import com.transtour.backend.voucher.model.Company;
 
 public class CostHourUtil {
 
-    public  static Double calculateCost(TravelDTO travelDTO){
+    public  static Double calculateCost(TravelDTO travelDTO, Company company){
 
         String hora = travelDTO.whitingTime.substring(0, 2);
         int cantHoras = Integer.parseInt(hora);
@@ -12,8 +13,9 @@ public class CostHourUtil {
         String minuto = travelDTO.whitingTime.substring(3, 5);
         int cantMinutos = Integer.parseInt(minuto);
 
-        String precio = travelDTO.whitingTime.substring(6);
-        Double valorHora = Double.parseDouble(precio);
+     // String precio = travelDTO.whitingTime.substring(6);
+     // Double valorHora = Double.parseDouble(precio);
+        Double valorHora = company.getWhitingTimeAmount();
 
         Double precioEsperaNumerico = 0.0;
         Double precioMinutos = 0.0;
