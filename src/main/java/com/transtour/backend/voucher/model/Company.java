@@ -15,4 +15,18 @@ public class Company {
     private String phone;
     private Double whitingTimeAmount;
     private Double dispositionTimeAmount;
+
+    @Override
+    public String toString() {
+        return "Company{" +
+                "id=" + id +
+                ", fullName='" + fullName + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", cuit='" + cuit + '\'' +
+                ", email=" + email +
+                ", phone='" + phone + '\'' +
+                ", whitingTimeAmount=" + whitingTimeAmount +
+                ", dispositionTimeAmount=" + dispositionTimeAmount +
+                '}';
+    }
 }

@@ -102,7 +102,9 @@ public class VoucherService {
                     String minuto = travelDTO.whitingTime.substring(3, 5);
                  // int cantMinutos = Integer.parseInt(minuto);
 
+                    LOG.info("que tiene voucher.get().getCompany(): " + voucher.get().getCompany().toString());
                     Company company = companyRepo.getCompany(voucher.get().getCompany());
+                    LOG.info("que tiene Company: " + company.toString());
 
                     Double total = CostHourUtil.calculateCost(travelDTO, company);
                     travelDTO.setWhitingTime(total.toString());
