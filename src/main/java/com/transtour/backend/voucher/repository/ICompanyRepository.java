@@ -17,6 +17,6 @@ public interface ICompanyRepository {
     */
 
   //  @RequestLine("GET /v1/company?fullName={fullName}")
-    @RequestMapping(method= RequestMethod.GET,value = "/v1/company?fullName={fullName}")
+    @RequestMapping(method= RequestMethod.GET,value = "/v1/company/search?fullName={fullName}")
     Company getCompany(@Param(value = "fullName") String fullName);
 }
