@@ -14,5 +14,5 @@ public class Company {
     private Double email;
     private String phone;
     private Double whitingTimeAmount;
-    private String dispositionTimeAmount;
+    private Double dispositionTimeAmount;
 }
