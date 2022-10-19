@@ -19,7 +19,8 @@ public class TravelDTO implements Serializable {
     public LocalTime time;
     public String company;
     public String bc;
-    public String passenger;
+    public String passengerName;
+    public String passengerEmail;
     public String reserveNumber;
     public String originAddress;
     public String destinyAddress;

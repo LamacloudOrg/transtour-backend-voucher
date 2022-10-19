@@ -1,14 +1,12 @@
 package com.transtour.backend.voucher.service;
 
 import com.github.dozermapper.core.Mapper;
+import com.transtour.backend.voucher.dto.NotificationVoucherDTO;
 import com.transtour.backend.voucher.dto.SignatureVoucherDTO;
 import com.transtour.backend.voucher.dto.TravelDTO;
 import com.transtour.backend.voucher.excption.VoucherNotReady;
 import com.transtour.backend.voucher.model.*;
-import com.transtour.backend.voucher.repository.ICompanyRepository;
-import com.transtour.backend.voucher.repository.ISignatureVoucherRepository;
-import com.transtour.backend.voucher.repository.ITravelRepo;
-import com.transtour.backend.voucher.repository.IVoucherRepository;
+import com.transtour.backend.voucher.repository.*;
 import com.transtour.backend.voucher.util.CostHourUtil;
 import com.transtour.backend.voucher.util.ImageUtil;
 import com.transtour.backend.voucher.util.JasperReportUtil;
@@ -59,6 +57,10 @@ public class VoucherService {
     @Qualifier("CompanyRepo")
     @Autowired
     ICompanyRepository companyRepo;
+
+    @Autowired
+    @Qualifier("NotificationRepo")
+    private INotificationRepo notificationRepo;
 
     @Autowired
     Mapper mapper;
@@ -197,14 +199,28 @@ public class VoucherService {
 
     public CompletableFuture<Object> setSignatureIntoVoucher(SignatureVoucherDTO signatureVoucherDTO) {
 
-        CompletableFuture<Object> completableFuture = CompletableFuture.supplyAsync(
+        CompletableFuture<Voucher> completableFuture = CompletableFuture.supplyAsync(
                 () -> {
                     Optional<Voucher> voucher = voucerRepo.findByTravelId(signatureVoucherDTO.getTravelId());
                     voucher.orElseThrow(RuntimeException::new);
                     voucher.get().setDocumentSigned(signatureVoucherDTO.getBase64());
                     voucher.get().setStatus(VoucherStatus.READY);
                     voucerRepo.save(voucher.get());
-                    return "Voucher created";
+                    return voucher.get();
+                }
+        );
+        CompletableFuture<Object> notified = completableFuture.thenApply(voucher -> sendPdfToPassenger(voucher));
+        return notified;
+    }
+
+    public CompletableFuture<Object> sendPdfToPassenger (Voucher voucher) {
+
+        CompletableFuture<Object> completableFuture = CompletableFuture.supplyAsync(
+                () -> {
+                    Travel travel = travelRepo.getTravel(voucher.getTravelId());
+                    NotificationVoucherDTO notificationVoucherDTO = new NotificationVoucherDTO(voucher.getTravelId(), travel.getPassengerEmail());
+                    notificationRepo.sendPdfToPassenger(notificationVoucherDTO);
+                    return "PDF Enviado";
                 }
         );
         return completableFuture;

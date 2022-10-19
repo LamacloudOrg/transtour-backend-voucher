@@ -17,7 +17,8 @@ public class Travel {
     private LocalTime time;
     private String company;
     private String bc;
-    private String passenger;
+    private String passengerName;
+    private String passengerEmail;
     private String reserveNumber;
     private String originAddress;
     private String destinyAddress;
