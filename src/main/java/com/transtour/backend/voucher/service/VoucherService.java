@@ -217,9 +217,17 @@ public class VoucherService {
 
         CompletableFuture<Object> completableFuture = CompletableFuture.supplyAsync(
                 () -> {
+                    LOG.info("Iniciando sendPdfToPassenger");
+
                     Travel travel = travelRepo.getTravel(voucher.getTravelId());
+                    LOG.info("Que tiene travel: " + travel.toString());
+
                     NotificationVoucherDTO notificationVoucherDTO = new NotificationVoucherDTO(voucher.getTravelId(), travel.getPassengerEmail());
+                    LOG.info("Que tiene notificationVoucherDTO: " + notificationVoucherDTO.toString());
+
                     notificationRepo.sendPdfToPassenger(notificationVoucherDTO);
+                    LOG.info("Finalizado sendPdfToPassenger");
+
                     return "PDF Enviado";
                 }
         );
