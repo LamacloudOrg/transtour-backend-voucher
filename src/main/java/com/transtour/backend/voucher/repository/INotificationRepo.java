@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @Qualifier("NotificationRepo")
-@FeignClient(name = "SPRING-CLOUD-NOTIFICATION")
+@FeignClient(name = "SPRING-CLOUD-NOTIFICATION-API")
 public interface INotificationRepo {
 
     @RequestMapping(method = RequestMethod.POST, value = "/v1/notification/sendPdfToPassenger")
