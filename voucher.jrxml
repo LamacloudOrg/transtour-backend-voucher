@@ -13,7 +13,7 @@
     <parameter name="time" class="java.lang.String"/>
     <parameter name="carDriverName" class="java.lang.String"/>
     <parameter name="company" class="java.lang.String"/>
-    <parameter name="passenger" class="java.lang.String"/>
+    <parameter name="passengerName" class="java.lang.String"/>
     <parameter name="originAddress" class="java.lang.String"/>
     <parameter name="destinyAddress" class="java.lang.String"/>
     <parameter name="observation" class="java.lang.String"/>
@@ -337,7 +337,7 @@ correspondiente factura.]]></text>
             <textField>
                 <reportElement x="89" y="35" width="414" height="14" uuid="44eae253-74ba-4a4f-9f25-bea4c3f71d1c"/>
                 <textElement textAlignment="Center"/>
-                <textFieldExpression><![CDATA[$P{passenger}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$P{passengerName}]]></textFieldExpression>
             </textField>
             <textField>
                 <reportElement x="89" y="57" width="413" height="14" uuid="ca1bdf12-1622-4cdb-ba58-d58a8506df44"/>
@@ -397,7 +397,7 @@ correspondiente factura.]]></text>
             <textField>
                 <reportElement x="553" y="199" width="210" height="19" uuid="d1d57590-6f47-498d-8355-403ce8e7d292"/>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
-                <textFieldExpression><![CDATA[$P{passenger}]]></textFieldExpression>
+                <textFieldExpression><![CDATA[$P{passengerName}]]></textFieldExpression>
             </textField>
             <image scaleImage="RetainShape" hAlign="Center" vAlign="Middle">
                 <reportElement x="567" y="135" width="180" height="36" uuid="00d48e6e-4e3b-4778-aaf5-400d65d0e766"/>
